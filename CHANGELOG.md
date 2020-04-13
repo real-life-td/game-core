@@ -1,3 +1,13 @@
+## [1.0.10](https://github.com/real-life-td/game-core/compare/v1.0.9...v1.0.10) (2020-04-13)
+
+### Continuous Integration
+
+- **check-fmt.yml:** only check format on pull request ([b648012](https://github.com/real-life-td/game-core/commit/b648012c1c5059aa8720008d030a3a755aa8741c))
+
+### Other
+
+- Merge branch 'master' of github.com:real-life-td/game-core ([5c6d171](https://github.com/real-life-td/game-core/commit/5c6d171df6b54bef0d56e0a7a4b8a596ddb104ff))
+
 ## [1.0.9](https://github.com/real-life-td/game-core/compare/v1.0.8...v1.0.9) (2020-04-13)
 
 ### Code Style
