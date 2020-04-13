@@ -1,3 +1,9 @@
+## [1.0.5](https://github.com/real-life-td/game-core/compare/v1.0.4...v1.0.5) (2020-04-13)
+
+### Continuous Integration
+
+- **check-fmt.yml:** potentially fix go version fetch ([f9e6b5e](https://github.com/real-life-td/game-core/commit/f9e6b5e0513d3b51c91aa78d1ae80a9a7f2d096a))
+
 ## [1.0.4](https://github.com/real-life-td/game-core/compare/v1.0.3...v1.0.4) (2020-04-13)
 
 ### Continuous Integration
