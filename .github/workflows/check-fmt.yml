@@ -17,4 +17,5 @@ jobs:
       - uses: actions/setup-go@v1
         with:
           go-version: ${{ steps.go_mod.outputs.version }}
-      - run: ! ( gofmt -l . | grep -q ^ ) || { echo "Code is not formatted with `go fmt`"; exit 1; }
+
+      - run: ! ( gofmt -l . | grep -q ^ ) || ( echo "Code is not formatted with go fmt" && exit 1 )
