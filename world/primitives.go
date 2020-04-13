@@ -12,3 +12,15 @@ func NewNode(id uint64, x, y int) *Node {
 	node.y = y
 	return node
 }
+
+func (n *Node) Id() uint64 {
+	return n.id
+}
+
+func (n *Node) X() int {
+	return n.x
+}
+
+func (n *Node) Y() int {
+	return n.y
+}
