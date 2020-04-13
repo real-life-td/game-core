@@ -1,0 +1,17 @@
+on:
+  push:
+    branches: [ master ]
+  pull-request:
+    branches: [ master ]
+
+jobs:
+  check-fmt:
+    runs-on: ubuntu-latest
+
+    steps:
+      - uses: actions/checkout@v2
+
+      - run: echo "::set-output name=version::(awk '$1=="go"{print $2}' go.mod)"
+        id: go_mod
+
+      - run: echo "${{ steps.go_mod.outputs.version }}"
