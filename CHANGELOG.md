@@ -1,3 +1,13 @@
+## [1.0.2](https://github.com/real-life-td/game-core/compare/v1.0.1...v1.0.2) (2020-04-13)
+
+### Continuous Integration
+
+- **check-fmt.yml:** add check fmt action ([f155ad0](https://github.com/real-life-td/game-core/commit/f155ad0893eb44416c6a3a03072b8026ad16c397))
+
+### Other
+
+- Merge branch 'master' of github.com:real-life-td/game-core ([f6f340f](https://github.com/real-life-td/game-core/commit/f6f340fb4eb63d55b26d9f4cd1e13ddc954861d2))
+
 ## [1.0.1](https://github.com/real-life-td/game-core/compare/v1.0.0...v1.0.1) (2020-04-13)
 
 ### Continuous Integration
