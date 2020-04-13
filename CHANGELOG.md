@@ -1,3 +1,9 @@
+## [1.0.6](https://github.com/real-life-td/game-core/compare/v1.0.5...v1.0.6) (2020-04-13)
+
+### Continuous Integration
+
+- **check-fmt.yml:** fail if code is not formatted ([2dc7ca9](https://github.com/real-life-td/game-core/commit/2dc7ca95f17c323c47c37907681f3a8c05a4501f))
+
 ## [1.0.5](https://github.com/real-life-td/game-core/compare/v1.0.4...v1.0.5) (2020-04-13)
 
 ### Continuous Integration
