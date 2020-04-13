@@ -1,3 +1,9 @@
+## [1.0.8](https://github.com/real-life-td/game-core/compare/v1.0.7...v1.0.8) (2020-04-13)
+
+### Continuous Integration
+
+- **check-fmt.yml:** remove exclemation mark ([921efc6](https://github.com/real-life-td/game-core/commit/921efc6b1eb17ae6b5105c606658844307b29c8f))
+
 ## [1.0.7](https://github.com/real-life-td/game-core/compare/v1.0.6...v1.0.7) (2020-04-13)
 
 ### Continuous Integration
