@@ -1,3 +1,13 @@
+## [1.0.1](https://github.com/real-life-td/game-core/compare/v1.0.0...v1.0.1) (2020-04-13)
+
+### Continuous Integration
+
+- **auto-release.yml:** don't trigger auto release on pull request operations ([0437b87](https://github.com/real-life-td/game-core/commit/0437b87d829a60c2d6d20da8892d0357ae66379e))
+
+### Other
+
+- Merge branch 'master' of github.com:real-life-td/game-core ([4be45e0](https://github.com/real-life-td/game-core/commit/4be45e00069956426d9c1b79b4793a4625394d65))
+
 # 1.0.0 (2020-04-13)
 
 ### Build System
