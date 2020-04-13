@@ -1,7 +1,7 @@
 package world
 
 type Node struct {
-	id uint64
+	id   uint64
 	x, y int
 }
 

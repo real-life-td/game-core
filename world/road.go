@@ -1,7 +1,7 @@
 package world
 
 type Road struct {
-	id uint64
+	id           uint64
 	node1, node2 *Node
 }
 
