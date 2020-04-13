@@ -14,4 +14,7 @@ jobs:
       - run: echo "::set-output name=version::(awk '$1=="go"{print $2}' go.mod)"
         id: go_mod
 
-      - run: echo "${{ steps.go_mod.outputs.version }}"
+      - uses: actions/setup-go@v1
+        with:
+          go-version: ${{ steps.go_mod.outputs.version }}
+      - run: go fmt
