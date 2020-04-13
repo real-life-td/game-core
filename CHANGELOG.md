@@ -1,3 +1,13 @@
+## [1.0.9](https://github.com/real-life-td/game-core/compare/v1.0.8...v1.0.9) (2020-04-13)
+
+### Code Style
+
+- **world:** ran go fmt ([3e8a8b5](https://github.com/real-life-td/game-core/commit/3e8a8b58e4c3953b100e082a488eb003934da93f))
+
+### Continuous Integration
+
+- **check-fmt.yml:** fix exiting with non-zero exit code when correctly formatted ([90a0638](https://github.com/real-life-td/game-core/commit/90a0638a66206f2627c82f8b7c464137a7d04df7))
+
 ## [1.0.8](https://github.com/real-life-td/game-core/compare/v1.0.7...v1.0.8) (2020-04-13)
 
 ### Continuous Integration
