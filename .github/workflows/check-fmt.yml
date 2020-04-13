@@ -17,12 +17,12 @@ jobs:
           go-version: ${{ steps.go_mod.outputs.version }}
 
       - run: ( gofmt -l . | grep -q ^ ) && echo "Code is not formatted with go fmt" && exit 1 || exit 0
-    commit-fmt:
-      runs-on: ubuntu-latest
-        env:
-          GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
-        steps:
-          - uses: actions/checkout@v2
-            with:
-              fetch-depth: 0
-          - uses: wagoid/commitlint-github-action@v1
+  commit-fmt:
+    runs-on: ubuntu-latest
+    env:
+        GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
+    steps:
+      - uses: actions/checkout@v2
+        with:
+          fetch-depth: 0
+      - uses: wagoid/commitlint-github-action@v1
