@@ -1,3 +1,9 @@
+## [1.0.7](https://github.com/real-life-td/game-core/compare/v1.0.6...v1.0.7) (2020-04-13)
+
+### Continuous Integration
+
+- **check-fmt.yml:** remove back-ticks from failed format output ([05f9621](https://github.com/real-life-td/game-core/commit/05f96213d851287b13e8938979c34ed659f58b21))
+
 ## [1.0.6](https://github.com/real-life-td/game-core/compare/v1.0.5...v1.0.6) (2020-04-13)
 
 ### Continuous Integration
