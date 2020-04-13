@@ -11,7 +11,7 @@ jobs:
     steps:
       - uses: actions/checkout@v2
 
-      - run: echo "::set-output name=version::(awk '$1=="go"{print $2}' go.mod)"
+      - run: awk '$1=="go"{print $2}' go.mod | xargs -I {} echo "::set-output name=version::{}"
         id: go_mod
 
       - uses: actions/setup-go@v1
