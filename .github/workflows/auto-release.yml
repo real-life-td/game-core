@@ -8,7 +8,7 @@ jobs:
   release:
     runs-on: ubuntu-latest
     env:
-      GITHUB_TOKEN: BOT_GITHUB_TOKEN
+      GITHUB_TOKEN: ${{ secrets.BOT_GITHUB_TOKEN }}
 
     steps:
       - uses: actions/checkout@v2
