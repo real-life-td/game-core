@@ -25,8 +25,8 @@ func typeValid(t Type) bool {
 	return t < typeEnd
 }
 
-// Adds type information. This requires the 16 most significant bits of the basedId to be empty or error will be thrown
-func BaseIdToId(baseId uint64, t Type) (id Id, err error) {
+// The 16 most significant bits of baseId must be empty or error will be thrown
+func NewId(baseId uint64, t Type) (id Id, err error) {
 	if baseId >> 48 != 0 {
 		return 0, errors.New("16 most significant bits of base id must be 0")
 	}
@@ -38,10 +38,10 @@ func BaseIdToId(baseId uint64, t Type) (id Id, err error) {
 	return Id((uint64(t) << 48) | baseId), nil
 }
 
-func IdType(id Id) Type {
+func (id Id) Type() Type {
 	return Type(id >> 48)
 }
 
-func BaseId(id Id) uint64 {
+func (id Id) BaseId() uint64 {
 	return uint64(id) & 0x0000FFFFFFFFFFFF
 }
