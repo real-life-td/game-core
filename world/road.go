@@ -1,12 +1,12 @@
 package world
 
 type Road struct {
-	id           uint64
+	id           Id
 	node1, node2 *Node
 	cost int
 }
 
-func NewRoad(id uint64, node1, node2 *Node, cost int) *Road {
+func NewRoad(id Id, node1, node2 *Node, cost int) *Road {
 	road := new(Road)
 	road.id = id
 	road.node1 = node1
@@ -15,7 +15,7 @@ func NewRoad(id uint64, node1, node2 *Node, cost int) *Road {
 	return road
 }
 
-func (r *Road) Id() uint64 {
+func (r *Road) Id() Id {
 	return r.id
 }
 
