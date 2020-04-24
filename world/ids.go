@@ -18,6 +18,8 @@ const (
 	// Add line to test at ids_test.go when adding a new line
 	RoadType Type = iota
 	NodeType
+	BuildingType
+	// IMPORTANT: Leave this at end
 	typeEnd
 )
 

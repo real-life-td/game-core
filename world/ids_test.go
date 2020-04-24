@@ -10,6 +10,7 @@ func TestTypeIota(t *testing.T) {
 	// Ensure that the order of the type constant iota hasn't changed
 	require.Equal(t, Type(0), RoadType)
 	require.Equal(t, Type(1), NodeType)
+	require.Equal(t, Type(2), BuildingType)
 }
 
 func TestNewId(t *testing.T) {
