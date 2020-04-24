@@ -2,7 +2,6 @@ package world
 
 import (
 	"errors"
-	"fmt"
 	"math"
 )
 
@@ -20,18 +19,15 @@ func CreateConverters(metadata *Metadata) (to LatLonToGameFunc, from GameToLatLo
 
 	// Define R such that the width of the map is correct
 	R := float64(metadata.width) / ((metadata.lon2 * degreeToRad) - (metadata.lon1 * degreeToRad))
-	println(R)
 
 	originX, originY := mercator(metadata.Lat1(), metadata.Lon1(), R)
 	_, endY := mercator(metadata.Lat2(), metadata.Lon2(), R)
 
 	// Determine the scale factor for height so that it comes out correctly
 	scaleFactor := float64(metadata.height) / (endY - originY)
-	println(scaleFactor)
 
 	to = func(lat, lon float64) (x, y int) {
 		fx, fy := mercator(lat, lon, R)
-		fmt.Printf("%f %f\n", fx, fy)
 		return int(math.Round(fx - originX)), int(math.Round((fy - originY) * scaleFactor))
 	}
 
