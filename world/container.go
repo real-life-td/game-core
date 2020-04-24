@@ -1,8 +1,8 @@
 package world
 
 type Container struct {
-	meta *Metadata
-	roads []*Road
+	meta      *Metadata
+	roads     []*Road
 	buildings []*Building
 }
 

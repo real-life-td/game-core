@@ -1,7 +1,7 @@
 package world
 
 type Metadata struct {
-	width, height int
+	width, height          int
 	lat1, lon1, lat2, lon2 float64 // latitudes and longitudes bounding the game world from least to greatest
 }
 

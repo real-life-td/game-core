@@ -3,7 +3,7 @@ package world
 type Road struct {
 	id           Id
 	node1, node2 *Node
-	cost int
+	cost         int
 }
 
 func NewRoad(id Id, node1, node2 *Node, cost int) *Road {

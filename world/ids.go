@@ -29,7 +29,7 @@ func typeValid(t Type) bool {
 
 // The 16 most significant bits of baseId must be empty or error will be thrown
 func NewId(baseId uint64, t Type) (id Id, err error) {
-	if baseId >> 48 != 0 {
+	if baseId>>48 != 0 {
 		return 0, errors.New("16 most significant bits of base id must be 0")
 	}
 

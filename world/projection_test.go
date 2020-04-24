@@ -50,7 +50,7 @@ func TestLatLonToGame(t *testing.T) {
 	for _, lat := range []float64{-0.25, 0.0, 0.25, 0.50, 0.75, 1.0, 1.25} {
 		for _, lon := range []float64{-0.25, 0.0, 0.25, 0.50, 0.75, 1.0, 1.25} {
 			// We are close enough to the equator and the game is small enough that this simple conversion works
-			x, y := int(math.Round(lon * 100)), int(math.Round(lat * 100))
+			x, y := int(math.Round(lon*100)), int(math.Round(lat*100))
 			test(metadata, lat, lon, x, y)
 		}
 	}
@@ -59,8 +59,8 @@ func TestLatLonToGame(t *testing.T) {
 	for _, lat := range []float64{-0.25, 0.0, 0.25, 0.50, 0.75, 1.0, 1.25} {
 		for _, lon := range []float64{-0.25, 0.0, 0.25, 0.50, 0.75, 1.0, 1.25} {
 			// We are close enough to the equator and the game is small enough that this simple conversion works
-			x, y := int(math.Round(lon * 50)), int(math.Round(lat * 200))
-			test(metadata, lat, lon + 45.0, x, y)
+			x, y := int(math.Round(lon*50)), int(math.Round(lat*200))
+			test(metadata, lat, lon+45.0, x, y)
 		}
 	}
 }
@@ -82,7 +82,7 @@ func TestGameToLatLon(t *testing.T) {
 	for _, x := range []int{-25000, 0, 25000, 50000, 75000, 100000} {
 		for _, y := range []int{-25000, 0, 25000, 50000, 75000, 100000} {
 			// We are close enough to the equator and the game is big enough that this simple conversion works
-			lat, lon := float64(y) / 10000000.0, float64(x) / 10000000.0
+			lat, lon := float64(y)/10000000.0, float64(x)/10000000.0
 			test(metadata, x, y, lat, lon)
 		}
 	}
@@ -91,8 +91,8 @@ func TestGameToLatLon(t *testing.T) {
 	for _, x := range []int{-25000, 0, 25000, 50000, 75000, 100000} {
 		for _, y := range []int{-25000, 0, 25000, 50000, 75000, 100000} {
 			// We are close enough to the equator and the game is big enough that this simple conversion works
-			lat, lon := float64(y) / 10000000.0, float64(x) / 10000000.0
-			test(metadata, x * 2, y * 4, lat, lon + 45.0)
+			lat, lon := float64(y)/10000000.0, float64(x)/10000000.0
+			test(metadata, x*2, y*4, lat, lon+45.0)
 		}
 	}
 }

@@ -1,7 +1,7 @@
 package world
 
 type Building struct {
-	id Id
+	id     Id
 	points []*Node
 }
 
