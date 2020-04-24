@@ -1,11 +1,11 @@
 package world
 
 type Node struct {
-	id   uint64
+	id   Id
 	x, y int
 }
 
-func NewNode(id uint64, x, y int) *Node {
+func NewNode(id Id, x, y int) *Node {
 	node := new(Node)
 	node.id = id
 	node.x = x
@@ -13,7 +13,7 @@ func NewNode(id uint64, x, y int) *Node {
 	return node
 }
 
-func (n *Node) Id() uint64 {
+func (n *Node) Id() Id {
 	return n.id
 }
 
