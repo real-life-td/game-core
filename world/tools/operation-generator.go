@@ -8,6 +8,7 @@ import (
 	"go/parser"
 	"go/token"
 	"os"
+	"os/exec"
 	"strings"
 )
 
@@ -65,7 +66,6 @@ func main() {
 	if err != nil {
 		panic(err)
 	}
-	defer f.Close()
 
 	b := bufio.NewWriter(f)
 	write := func(s string) {
@@ -92,6 +92,15 @@ func main() {
 	}
 
 	err = b.Flush()
+	if err != nil {
+		panic(err)
+	}
+
+	f.Close()
+
+	// Rather than try to make the output of this generator follow the correct formatting. Just run the go formatter
+	// on the generated file.
+	err = exec.Command("gofmt","-w", "world/operations.go").Run()
 	if err != nil {
 		panic(err)
 	}
