@@ -270,11 +270,11 @@ func operationFunctions(structName string, operations []*operation) string {
 					panic(errors.New("cannot create add action on non-slice type"))
 				}
 
-				funcString.WriteString(fmt.Sprintf("\t\tif %s.%s == nil {", recieverName, op.field))
-				funcString.WriteString(fmt.Sprintf("\t\t\t%s.%s = make(%s, 0)", recieverName, op.field, op.goType))
-				funcString.WriteString("\t\t}")
+				funcString.WriteString(fmt.Sprintf("\t\tif %s.%s == nil {\n", recieverName, op.field))
+				funcString.WriteString(fmt.Sprintf("\t\t\t%s.%s = make(%s, 0)\n", recieverName, op.field, op.goType))
+				funcString.WriteString("\t\t}\n")
 				funcString.WriteString("\n")
-				funcString.WriteString(fmt.Sprintf("\t\t%s.%s = append(%s.%s, o.%s...)", recieverName, op.field, recieverName, op.field, operationFieldName))
+				funcString.WriteString(fmt.Sprintf("\t\t%s.%s = append(%s.%s, o.%s...)\n", recieverName, op.field, recieverName, op.field, operationFieldName))
 			}
 
 			funcString.WriteString("\t}\n")
