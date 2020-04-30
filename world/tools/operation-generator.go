@@ -9,6 +9,7 @@ import (
 	"go/token"
 	"os"
 	"os/exec"
+	"sort"
 	"strings"
 )
 
@@ -34,15 +35,19 @@ var stagePrefix = map[stage]string {
 
 type action uint8
 const (
+	// Order based on precedence (which actions should be applied first)
 	setAction action = iota
+	addAction
 )
 
 var commandToAction = map[string]action {
 	"SET": setAction,
+	"ADD": addAction,
 }
 
 var actionFieldPrefix = map[action]string {
 	setAction: "New",
+	addAction: "Additional",
 }
 
 type operation struct {
@@ -207,7 +212,8 @@ func findStructures(fileAST *ast.File) (structures []*ast.StructType, names []st
 	return
 }
 
-func separateStages(operations []*operation) map[stage][]*operation {
+// Separates a list of operations by their stage and sorts them based on action precedence
+func separateStagesAndSort(operations []*operation) map[stage][]*operation {
 	separated := make(map[stage][]*operation)
 	for _, op := range operations {
 		s, ok := separated[op.stage]
@@ -216,6 +222,12 @@ func separateStages(operations []*operation) map[stage][]*operation {
 		} else {
 			separated[op.stage] = []*operation{op}
 		}
+	}
+
+	for _, operations := range separated {
+		sort.Slice(operations, func(i, j int) bool {
+			return  operations[i].action < operations[j].action
+		})
 	}
 
 	return separated
@@ -227,7 +239,7 @@ func operationFunctions(structName string, operations []*operation) string {
 
 	recieverName := strings.ToLower(structName[0: 1])
 
-	separated := separateStages(operations)
+	separated := separateStagesAndSort(operations)
 	for stage, stageOperations := range separated {
 		operationStructName := fmt.Sprintf("%s%sOperation", structName, stagePrefix[stage])
 
@@ -251,6 +263,16 @@ func operationFunctions(structName string, operations []*operation) string {
 			switch op.action {
 			case setAction:
 				funcString.WriteString(fmt.Sprintf("\t\t%s.%s = o.%s\n", recieverName, op.field, operationFieldName))
+			case addAction:
+				if !strings.HasPrefix(op.goType, "[]") {
+					panic(errors.New("cannot create add action on non-slice type"))
+				}
+
+				funcString.WriteString(fmt.Sprintf("\t\tif %s.%s == nil {", recieverName, op.field))
+				funcString.WriteString(fmt.Sprintf("\t\t\t%s.%s = make(%s, 0)", recieverName, op.field, op.goType))
+				funcString.WriteString("\t\t}")
+				funcString.WriteString("\n")
+				funcString.WriteString(fmt.Sprintf("\t\t%s.%s = append(%s.%s, o.%s...)", recieverName, op.field, recieverName, op.field, operationFieldName))
 			}
 
 			funcString.WriteString("\t}\n")
