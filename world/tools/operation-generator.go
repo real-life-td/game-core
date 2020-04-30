@@ -51,8 +51,12 @@ type operation struct {
 }
 
 func main() {
+	if len(os.Args) != 2 {
+		panic(errors.New("invalid number of args: expecting path of file to generate operations for"))
+	}
+
 	fset := token.NewFileSet()
-	fast, err := parser.ParseFile(fset, "world/building.go", nil, parser.ParseComments)
+	fast, err := parser.ParseFile(fset, os.Args[1], nil, parser.ParseComments)
 	if err != nil {
 		panic(err)
 	}
