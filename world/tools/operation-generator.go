@@ -56,6 +56,11 @@ type operation struct {
 }
 
 func main() {
+	// Remove the argument separator character so that this program will work with `go run -- <path>`
+	if os.Args[1] == "--" {
+		os.Args = append(os.Args[:1], os.Args[2:]...)
+	}
+
 	if len(os.Args) != 2 {
 		panic(errors.New("invalid number of args: expecting path of file to generate operations for"))
 	}
