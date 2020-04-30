@@ -9,6 +9,7 @@ import (
 	"go/token"
 	"os"
 	"os/exec"
+	"path"
 	"sort"
 	"strings"
 )
@@ -65,7 +66,8 @@ func main() {
 		panic(err)
 	}
 
-	f, err := os.OpenFile("world/operations.go", os.O_WRONLY | os.O_CREATE | os.O_TRUNC, 0777)
+	fileName := strings.TrimSuffix(os.Args[1], path.Ext(os.Args[1])) + "-operations.go"
+	f, err := os.OpenFile(fileName, os.O_WRONLY | os.O_CREATE | os.O_TRUNC, 0777)
 	if err != nil {
 		panic(err)
 	}
@@ -110,7 +112,7 @@ func main() {
 
 	// Rather than try to make the output of this generator follow the correct formatting. Just run the go formatter
 	// on the generated file.
-	err = exec.Command("gofmt","-w", "world/operations.go").Run()
+	err = exec.Command("gofmt","-w", fileName).Run()
 	if err != nil {
 		panic(err)
 	}
