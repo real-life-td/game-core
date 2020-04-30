@@ -13,9 +13,7 @@ import (
 	"strings"
 )
 
-var requiredImports = []string{
-	"github.com/real-life-td/math/primitives",
-}
+var requiredImports []string
 
 type stage uint8
 const (
@@ -88,12 +86,14 @@ func main() {
 	write("package world\n")
 	write("\n")
 
-	write("import (\n")
-	for _, requiredImport := range requiredImports {
-		write("\t\"" + requiredImport + "\"\n")
+	if requiredImports != nil {
+		write("import (\n")
+		for _, requiredImport := range requiredImports {
+			write("\t\"" + requiredImport + "\"\n")
+		}
+		write(")\n")
+		write("\n")
 	}
-	write(")\n")
-	write("\n")
 
 	structures, names := findStructures(fast)
 	for i, s := range structures {
