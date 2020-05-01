@@ -23,16 +23,16 @@ func NewBuilding(id Id, points []*Node) *Building {
 	minX, minY := constants.MaxInt, constants.MaxInt
 	maxX, maxY := constants.MinInt, constants.MinInt
 	for _, p := range points {
-		if p.x < minX {
-			minX = p.x
-		} else if p.x > maxX {
-			maxX = p.x
+		if p.X() < minX {
+			minX = p.X()
+		} else if p.X() > maxX {
+			maxX = p.X()
 		}
 
-		if p.y < minY {
-			minY = p.y
-		} else if p.y > maxY {
-			maxY = p.y
+		if p.Y() < minY {
+			minY = p.Y()
+		} else if p.Y() > maxY {
+			maxY = p.Y()
 		}
 	}
 
