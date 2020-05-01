@@ -3,7 +3,7 @@
 package world
 
 type Road struct {
-	id           Id
+	id Id
 	*Node
 	connections []*Road // GEN: INIT_STAGE(SET, ADD)
 }

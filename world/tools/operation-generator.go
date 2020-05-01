@@ -17,6 +17,7 @@ import (
 var requiredImports []string
 
 type stage uint8
+
 const (
 	initStage stage = iota
 	gameStage
@@ -27,32 +28,33 @@ var commandToStage = map[string]stage{
 	"GAME_STAGE": gameStage,
 }
 
-var stagePrefix = map[stage]string {
+var stagePrefix = map[stage]string{
 	initStage: "Init",
 	gameStage: "",
 }
 
 type action uint8
+
 const (
 	// Order based on precedence (which actions should be applied first)
 	setAction action = iota
 	addAction
 )
 
-var commandToAction = map[string]action {
+var commandToAction = map[string]action{
 	"SET": setAction,
 	"ADD": addAction,
 }
 
-var actionFieldPrefix = map[action]string {
+var actionFieldPrefix = map[action]string{
 	setAction: "New",
 	addAction: "Additional",
 }
 
 type operation struct {
 	field, goType string
-	stage stage
-	action action
+	stage         stage
+	action        action
 }
 
 func main() {
@@ -72,7 +74,7 @@ func main() {
 	}
 
 	fileName := strings.TrimSuffix(os.Args[1], path.Ext(os.Args[1])) + "-operations.go"
-	f, err := os.OpenFile(fileName, os.O_WRONLY | os.O_CREATE | os.O_TRUNC, 0777)
+	f, err := os.OpenFile(fileName, os.O_WRONLY|os.O_CREATE|os.O_TRUNC, 0777)
 	if err != nil {
 		panic(err)
 	}
@@ -117,7 +119,7 @@ func main() {
 
 	// Rather than try to make the output of this generator follow the correct formatting. Just run the go formatter
 	// on the generated file.
-	err = exec.Command("gofmt","-w", fileName).Run()
+	err = exec.Command("gofmt", "-w", fileName).Run()
 	if err != nil {
 		panic(err)
 	}
@@ -127,7 +129,7 @@ func findStructureOperations(structType *ast.StructType) []*operation {
 	operations := make([]*operation, 0)
 
 	for _, field := range structType.Fields.List {
-		if field.Comment != nil && strings.HasPrefix(field.Comment.Text(), "GEN:"){
+		if field.Comment != nil && strings.HasPrefix(field.Comment.Text(), "GEN:") {
 			// Remove all spaces (including newlines) and the "GEN:" prefix from the string
 			trimmedComment := strings.TrimSpace(field.Comment.Text())
 			trimmedComment = strings.ReplaceAll(trimmedComment, " ", "")
@@ -144,17 +146,17 @@ func findStructureOperations(structType *ast.StructType) []*operation {
 						stage = potentialStage
 
 						// Check that the stage string is followed by an open parentheses
-						if stageString[len(potentialCommand) : len(potentialCommand) + 1] != "(" {
+						if stageString[len(potentialCommand):len(potentialCommand)+1] != "(" {
 							panic(errors.New("stage string: '" + stageString + "' missing open parentheses"))
 						}
 
 						// Check that the stage string ends in a closing parentheses
-						if stageString[len(stageString) - 1:] != ")" {
+						if stageString[len(stageString)-1:] != ")" {
 							panic(errors.New("stage string: '" + stageString + "' missing closing parentheses"))
 						}
 
 						// Get text between the parentheses
-						actionsString = stageString[len(potentialCommand) + 1 : len(stageString) - 1]
+						actionsString = stageString[len(potentialCommand)+1 : len(stageString)-1]
 						break
 					}
 				}
@@ -233,7 +235,7 @@ func separateStagesAndSort(operations []*operation) map[stage][]*operation {
 
 	for _, operations := range separated {
 		sort.Slice(operations, func(i, j int) bool {
-			return  operations[i].action < operations[j].action
+			return operations[i].action < operations[j].action
 		})
 	}
 
@@ -244,7 +246,7 @@ func separateStagesAndSort(operations []*operation) map[stage][]*operation {
 func operationFunctions(structName string, operations []*operation) string {
 	var funcString strings.Builder
 
-	recieverName := strings.ToLower(structName[0: 1])
+	recieverName := strings.ToLower(structName[0:1])
 
 	separated := separateStagesAndSort(operations)
 	for stage, stageOperations := range separated {
@@ -283,7 +285,7 @@ func operationFunctions(structName string, operations []*operation) string {
 			}
 
 			funcString.WriteString("\t}\n")
-			if i != len(stageOperations) - 1 {
+			if i != len(stageOperations)-1 {
 				funcString.WriteString("\n")
 			}
 		}
