@@ -19,5 +19,5 @@ jobs:
       - run: go generate ./...
         name: run all generation scripts
 
-      - run: ( git diff | grep -q ^ ) && echo "Generated code is stale" && exit 1 || exit 0
+      - run: ( git diff -- . ':(exclude)go.sum' | grep -q ^ ) && echo "Generated code is stale" && exit 1 || exit 0
         name: check diff
