@@ -1,17 +1,17 @@
+//go:generate go run tools/operation-generator.go -- road.go
+
 package world
 
 type Road struct {
-	id           Id
-	node1, node2 *Node
-	cost         int
+	id Id
+	*Node
+	connections []*Road // GEN: INIT_STAGE(SET, ADD)
 }
 
-func NewRoad(id Id, node1, node2 *Node, cost int) *Road {
+func NewRoad(id Id, pos *Node) *Road {
 	road := new(Road)
 	road.id = id
-	road.node1 = node1
-	road.node2 = node2
-	road.cost = cost
+	road.Node = pos
 	return road
 }
 
@@ -19,14 +19,6 @@ func (r *Road) Id() Id {
 	return r.id
 }
 
-func (r *Road) Node1() *Node {
-	return r.node1
-}
-
-func (r *Road) Node2() *Node {
-	return r.node2
-}
-
-func (r *Road) Cost() int {
-	return r.cost
+func (r *Road) Connections() []*Road {
+	return r.connections
 }
