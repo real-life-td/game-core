@@ -8,7 +8,6 @@ import (
 	"go/parser"
 	"go/token"
 	"os"
-	"os/exec"
 	"path"
 	"sort"
 	"strings"
@@ -39,16 +38,19 @@ const (
 	// Order based on precedence (which actions should be applied first)
 	setAction action = iota
 	addAction
+	removeAction
 )
 
 var commandToAction = map[string]action{
 	"SET": setAction,
 	"ADD": addAction,
+	"REMOVE": removeAction,
 }
 
 var actionFieldPrefix = map[action]string{
 	setAction: "New",
 	addAction: "Additional",
+	removeAction: "ToRemove",
 }
 
 type operation struct {
@@ -119,10 +121,10 @@ func main() {
 
 	// Rather than try to make the output of this generator follow the correct formatting. Just run the go formatter
 	// on the generated file.
-	err = exec.Command("gofmt", "-w", fileName).Run()
-	if err != nil {
-		panic(err)
-	}
+	//err = exec.Command("gofmt", "-w", fileName).Run()
+	//if err != nil {
+	//	panic(err)
+	//}
 }
 
 func findStructureOperations(structType *ast.StructType) []*operation {
@@ -256,7 +258,7 @@ func operationFunctions(structName string, operations []*operation) string {
 		funcString.WriteString(fmt.Sprintf("type %s struct {\n", operationStructName))
 
 		for _, op := range stageOperations {
-			funcString.WriteString(fmt.Sprintf("\t%s%s %s\n", actionFieldPrefix[op.action], strings.Title(op.field), op.goType))
+			funcString.WriteString(fmt.Sprintf("\t%s %s\n", operationFieldName(op), op.goType))
 		}
 
 		funcString.WriteString("}\n")
@@ -265,7 +267,7 @@ func operationFunctions(structName string, operations []*operation) string {
 		// Generate the function for the operation
 		funcString.WriteString(fmt.Sprintf("func (%s *%s) %sOperation(o *%s) {\n", recieverName, structName, stagePrefix[stage], operationStructName))
 		for i, op := range stageOperations {
-			operationFieldName := fmt.Sprintf("%s%s", actionFieldPrefix[op.action], strings.Title(op.field))
+			operationFieldName := operationFieldName(op)
 
 			funcString.WriteString(fmt.Sprintf("\tif o.%s != nil {\n", operationFieldName))
 
@@ -282,6 +284,26 @@ func operationFunctions(structName string, operations []*operation) string {
 				funcString.WriteString("\t\t}\n")
 				funcString.WriteString("\n")
 				funcString.WriteString(fmt.Sprintf("\t\t%s.%s = append(%s.%s, o.%s...)\n", recieverName, op.field, recieverName, op.field, operationFieldName))
+			case removeAction:
+				if !strings.HasPrefix(op.goType, "[]") {
+					panic(errors.New("cannot create remove action on non-slice type"))
+				}
+
+				funcString.WriteString(fmt.Sprintf("\t\tif %s.%s != nil {\n", recieverName, op.field))
+				funcString.WriteString(fmt.Sprintf("\t\t\tfor _, toRemoveElm := range o.%s {\n", operationFieldName))
+				funcString.WriteString("\t\t\tindexOf := -1\n")
+				funcString.WriteString(fmt.Sprintf("\t\t\tfor i, elm := range %s.%s {\n", recieverName, op.field))
+				funcString.WriteString(fmt.Sprintf("\t\t\t\tif elm == toRemoveElm {\n"))
+				funcString.WriteString("\t\t\t\t\tindexOf = i\n")
+				funcString.WriteString("\t\t\t\t}\n")
+				funcString.WriteString("\t\t\t}\n")
+				funcString.WriteString("\n")
+				funcString.WriteString("\t\t\tif indexOf != -1 {\n")
+				funcString.WriteString(fmt.Sprintf("\t\t\t\t%s.%s[indexOf] = %s.%s[len(%s.%s) - 1]\n", recieverName, op.field, recieverName, op.field, recieverName, op.field))
+				funcString.WriteString(fmt.Sprintf("\t\t\t\t%s.%s = %s.%s[:len(%s.%s) - 1]\n", recieverName, op.field, recieverName, op.field, recieverName, op.field))
+				funcString.WriteString("\t\t\t}\n")
+				funcString.WriteString("\t\t}\n")
+				funcString.WriteString("\t\t}")
 			}
 
 			funcString.WriteString("\t}\n")
@@ -295,4 +317,9 @@ func operationFunctions(structName string, operations []*operation) string {
 	}
 
 	return funcString.String()
+}
+
+func operationFieldName(op *operation) string {
+	operationFieldName := fmt.Sprintf("%s%s", actionFieldPrefix[op.action], strings.Title(op.field))
+	return operationFieldName
 }
