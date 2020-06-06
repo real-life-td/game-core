@@ -5,8 +5,9 @@
 package world
 
 type BuildingInitOperation struct {
-	NewConnections        []*Road
-	AdditionalConnections []*Road
+	NewConnections        []*Connection
+	AdditionalConnections []*Connection
+	ToRemoveConnections   []*Connection
 }
 
 func (b *Building) InitOperation(o *BuildingInitOperation) {
@@ -16,9 +17,27 @@ func (b *Building) InitOperation(o *BuildingInitOperation) {
 
 	if o.AdditionalConnections != nil {
 		if b.connections == nil {
-			b.connections = make([]*Road, 0)
+			b.connections = make([]*Connection, 0)
 		}
 
 		b.connections = append(b.connections, o.AdditionalConnections...)
+	}
+
+	if o.ToRemoveConnections != nil {
+		if b.connections != nil {
+			for _, toRemoveElm := range o.ToRemoveConnections {
+				indexOf := -1
+				for i, elm := range b.connections {
+					if elm == toRemoveElm {
+						indexOf = i
+					}
+				}
+
+				if indexOf != -1 {
+					b.connections[indexOf] = b.connections[len(b.connections)-1]
+					b.connections = b.connections[:len(b.connections)-1]
+				}
+			}
+		}
 	}
 }

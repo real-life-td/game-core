@@ -7,11 +7,37 @@ import (
 	"github.com/real-life-td/math/primitives"
 )
 
+type Connection struct {
+	road            *Road
+	distance        float64
+	pointOnBuilding *primitives.Point
+}
+
+func NewConnection(road *Road, distance float64, pointOnBuilding *primitives.Point) *Connection {
+	c := new(Connection)
+	c.road = road
+	c.distance = distance
+	c.pointOnBuilding = pointOnBuilding
+	return c
+}
+
+func (c *Connection) Road() *Road {
+	return c.road
+}
+
+func (c *Connection) Distance() float64 {
+	return c.distance
+}
+
+func (c *Connection) PointOnBuilding() *primitives.Point {
+	return c.pointOnBuilding
+}
+
 type Building struct {
 	id          Id
 	points      []*Node
 	bounds      *primitives.Rectangle
-	connections []*Road // GEN: INIT_STAGE(SET, ADD)
+	connections []*Connection // GEN: INIT_STAGE(SET, ADD, REMOVE)
 }
 
 func NewBuilding(id Id, points []*Node) *Building {
@@ -53,6 +79,6 @@ func (b *Building) Bounds() *primitives.Rectangle {
 	return b.bounds
 }
 
-func (b *Building) Connections() []*Road {
+func (b *Building) Connections() []*Connection {
 	return b.connections
 }
