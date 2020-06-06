@@ -17,7 +17,8 @@ func TestNewBuilding(t *testing.T) {
 
 func TestBuilding_Connections(t *testing.T) {
 	b := NewBuilding(0, nil)
-	b.connections = []*Road{NewRoad(1, nil)}
+	expectedConnections := []*Connection{NewConnection(NewRoad(1, NewNode(2, 3, 4)), 5, primitives.NewPoint(6, 7))}
+	b.connections = expectedConnections
 
-	require.Equal(t, b.Connections(), []*Road{NewRoad(1, nil)})
+	require.Equal(t, b.Connections(), expectedConnections)
 }
