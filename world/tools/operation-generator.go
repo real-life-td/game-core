@@ -42,14 +42,14 @@ const (
 )
 
 var commandToAction = map[string]action{
-	"SET": setAction,
-	"ADD": addAction,
+	"SET":    setAction,
+	"ADD":    addAction,
 	"REMOVE": removeAction,
 }
 
 var actionFieldPrefix = map[action]string{
-	setAction: "New",
-	addAction: "Additional",
+	setAction:    "New",
+	addAction:    "Additional",
 	removeAction: "ToRemove",
 }
 
