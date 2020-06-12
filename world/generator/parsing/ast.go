@@ -13,6 +13,7 @@ type GoStruct struct {
 type GoType struct {
 	Value string
 	IsArray bool
+	Nillable bool
 }
 
 func FindStructures(fileAST *ast.File) []*GoStruct {
@@ -46,13 +47,13 @@ func FindStructures(fileAST *ast.File) []*GoStruct {
 func GoTypeFromExpr(e ast.Expr) GoType {
 	switch v := e.(type) {
 	case *ast.Ident:
-		return GoType{v.Name, false}
+		return GoType{v.Name, false, false}
 	case *ast.ArrayType:
-		return GoType{"[]" + GoTypeFromExpr(v.Elt).Value, true}
+		return GoType{"[]" + GoTypeFromExpr(v.Elt).Value, true, true}
 	case *ast.StarExpr:
-		return GoType{"*" + GoTypeFromExpr(v.X).Value, false}
+		return GoType{"*" + GoTypeFromExpr(v.X).Value, false, true}
 	case *ast.SelectorExpr:
-		return GoType{GoTypeFromExpr(v.X).Value + "." + v.Sel.Name,false}
+		return GoType{GoTypeFromExpr(v.X).Value + "." + v.Sel.Name,false, false}
 	default:
 		panic(errors.New("unknown type"))
 	}

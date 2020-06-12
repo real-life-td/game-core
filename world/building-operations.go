@@ -5,12 +5,26 @@ package world
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 type BuildingInitOperation struct {
+	NewId                 *Id
 	NewConnections        []*Connection
 	AdditionalConnections []*Connection
 	ToRemoveConnections   []*Connection
 }
+type BuildingOperation struct {
+	NewId                 *Id
+	AdditionalConnections []*Connection
+	ToRemoveConnections   []*Connection
+	NewConnections        []*Connection
+}
+type BuildingDelta struct {
+	id          *Id
+	connections []*Connection
+}
 
 func (b *Building) InitOperation(o *BuildingInitOperation) {
+	if o.NewId != nil {
+		b.id = *o.NewId
+	}
 	if o.NewConnections != nil {
 		b.connections = o.NewConnections
 	}
@@ -38,4 +52,48 @@ func (b *Building) InitOperation(o *BuildingInitOperation) {
 			}
 		}
 	}
+}
+func (b *Building) Operation(o *BuildingInitOperation) *BuildingDelta {
+	delta := new(BuildingDelta)
+	if o.NewId != nil {
+		b.id = *o.NewId
+		delta.id = &b.id
+	}
+	if o.AdditionalConnections != nil {
+		if len(o.AdditionalConnections) != 0 {
+			if b.connections == nil {
+				b.connections = make([]*Connection, 0)
+			}
+			b.connections = append(b.connections, o.AdditionalConnections...)
+			delta.connections = b.connections
+		}
+	}
+	if o.ToRemoveConnections != nil {
+		if b.connections != nil {
+			removedAny := false
+			for _, toRemove := range o.ToRemoveConnections {
+				indexOf := -1
+				for i, elm := range b.connections {
+					if elm == toRemove {
+						indexOf = i
+						break
+					}
+				}
+				if indexOf != -1 {
+					lastIndex := len(b.connections) - 1
+					b.connections[indexOf] = b.connections[lastIndex]
+					b.connections = b.connections[:lastIndex]
+					removedAny = true
+				}
+			}
+			if removedAny {
+				delta.connections = b.connections
+			}
+		}
+	}
+	if o.NewConnections != nil {
+		b.connections = o.NewConnections
+		delta.connections = b.connections
+	}
+	return delta
 }

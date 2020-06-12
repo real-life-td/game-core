@@ -34,10 +34,10 @@ func (c *Connection) PointOnBuilding() *primitives.Point {
 }
 
 type Building struct {
-	id          Id
+	id          Id // GEN: INIT_STAGE(SET);GAME_STAGE(SET)
 	points      []*Node
 	bounds      *primitives.Rectangle
-	connections []*Connection // GEN: INIT_STAGE(SET, ADD, REMOVE)
+	connections []*Connection // GEN: INIT_STAGE(SET, ADD, REMOVE);GAME_STAGE(ADD,REMOVE,SET)
 }
 
 func NewBuilding(id Id, points []*Node) *Building {

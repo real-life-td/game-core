@@ -11,7 +11,8 @@ func GenerateOperations(file *jen.File, structs []*parsing.GoStruct) {
 		if len(stageOperations) != 0 {
 			writeOperationStructs(file, s.Name, stageOperations)
 
-			writeInitFunc(file, s.Name, stageOperations.iterable()[initStage])
+			writeInitFunc(file, s.Name, stageOperations.get(initStage))
+			writeGameFunc(file, s.Name, stageOperations.get(gameStage))
 		}
 	}
 }

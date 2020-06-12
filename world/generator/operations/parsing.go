@@ -53,8 +53,12 @@ func (s StageOperations) add(o *operation) {
 	}
 }
 
+func (s StageOperations) get(stage stage) []*operation {
+	return s[stage]
+}
+
 func (s StageOperations) iterable() map[stage][]*operation {
-	return map[stage][]*operation(s)
+	return s
 }
 
 func findStructureOperations(structType *ast.StructType) StageOperations {

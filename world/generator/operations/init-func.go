@@ -71,5 +71,12 @@ func initRemoveAction(operation *operation, receiverName string) []Code {
 
 func initSetConnections(operation *operation, receiverName string) []Code {
 	fieldName := operationFieldName(operation)
-	return []Code{Id(receiverName).Dot(operation.field).Op("=").Id("o").Dot(fieldName)}
+	structField := Id(receiverName).Dot(operation.field)
+
+	if operation.fieldType.Nillable {
+		return []Code{structField.Op("=").Id("o").Dot(fieldName)}
+	} else {
+		return []Code{structField.Op("=").Op("*").Id("o").Dot(fieldName)}
+	}
+
 }
