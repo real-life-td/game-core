@@ -129,7 +129,7 @@ func parseActions(command string) (actions []action, err error) {
 	actions = make([]action, 0)
 
 	// all text between the two parentheses of a command
-	actionsString := command[strings.Index(command, "(") + 1 : len(command) - 1]
+	actionsString := command[strings.Index(command, "(")+1 : len(command)-1]
 
 	for _, actionToken := range strings.Split(actionsString, ",") {
 		validFound := false

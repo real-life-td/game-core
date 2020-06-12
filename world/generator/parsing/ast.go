@@ -6,13 +6,13 @@ import (
 )
 
 type GoStruct struct {
-	Ast *ast.StructType
+	Ast  *ast.StructType
 	Name string
 }
 
 type GoType struct {
-	Value string
-	IsArray bool
+	Value    string
+	IsArray  bool
 	Nillable bool
 }
 
@@ -53,7 +53,7 @@ func GoTypeFromExpr(e ast.Expr) GoType {
 	case *ast.StarExpr:
 		return GoType{"*" + GoTypeFromExpr(v.X).Value, false, true}
 	case *ast.SelectorExpr:
-		return GoType{GoTypeFromExpr(v.X).Value + "." + v.Sel.Name,false, false}
+		return GoType{GoTypeFromExpr(v.X).Value + "." + v.Sel.Name, false, false}
 	default:
 		panic(errors.New("unknown type"))
 	}

@@ -77,7 +77,6 @@ func gameRemoveAction(operation *operation, receiverName string) []Code {
 		If(Id("removedAny")).Block(
 			Id("delta").Dot(operation.field).Op("=").Add(structField.Clone())))
 
-
 	return []Code{ifNotNilOrEmpty}
 }
 
