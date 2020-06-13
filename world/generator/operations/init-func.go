@@ -6,6 +6,10 @@ import (
 )
 
 func writeInitFunc(file *File, structName string, initOperations []*operation) {
+	if len(initOperations) == 0 {
+		return
+	}
+
 	receiverId := receiverId(structName)
 
 	operationCode := make([]Code, 0)

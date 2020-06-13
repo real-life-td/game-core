@@ -6,6 +6,10 @@ import (
 )
 
 func writeGameFunc(file *File, structName string, gameOperations []*operation) {
+	if len(gameOperations) == 0 {
+		return
+	}
+
 	receiverId := receiverId(structName)
 
 	operationCode := make([]Code, 0)
