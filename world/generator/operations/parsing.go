@@ -12,8 +12,9 @@ type stage int
 type action int
 
 const (
-	initStage stage = iota
+	initStage stage = iota // Keep at start
 	gameStage
+	numStages // Keep at end
 )
 
 const (

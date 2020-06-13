@@ -22,7 +22,12 @@ func writeOperationStructs(file *jen.File, structName string, structOperations S
 	// Map from field name to type for all fields that need to be a part of the delta structure
 	neededDeltaFields := make(map[string]parsing.GoType)
 
-	for stage, operations := range structOperations.iterable() {
+	for stage := initStage; stage < numStages; stage++ {
+		operations := structOperations.get(stage)
+		if len(operations) == 0 {
+			continue
+		}
+
 		fields := make([]jen.Code, 0)
 		for _, operation := range operations {
 			fields = append(fields, jen.Id(operationFieldName(operation)).Id(nillableType(operation.fieldType)))
