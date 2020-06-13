@@ -1,4 +1,4 @@
-//go:generate go run generator/generator.go -- building.go
+//go:generate go run generator/generator.go -- $GOFILE
 
 package world
 
