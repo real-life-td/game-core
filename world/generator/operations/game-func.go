@@ -36,7 +36,7 @@ func writeGameFunc(file *File, structName string, gameOperations []*operation) {
 
 	operationCode = append(operationCode, Return(Id("delta")))
 
-	operationStruct := Id("o").Op("*").Id(operationStructName(initStage, structName))
+	operationStruct := Id("o").Op("*").Id(operationStructName(gameStage, structName))
 	file.Func().Params(Id(receiverId).Op("*").Id(structName)).Id("Operation").Params(operationStruct).Op("*").Id(deltaStructName).Block(operationCode...)
 }
 

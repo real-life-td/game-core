@@ -47,7 +47,7 @@ func (b *Building) InitOperation(o *BuildingInitOperation) {
 		}
 	}
 }
-func (b *Building) Operation(o *BuildingInitOperation) *BuildingDelta {
+func (b *Building) Operation(o *BuildingOperation) *BuildingDelta {
 	delta := new(BuildingDelta)
 	if o.AdditionalConnections != nil {
 		if len(o.AdditionalConnections) != 0 {
