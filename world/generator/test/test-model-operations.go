@@ -111,7 +111,8 @@ func (t *testModel) Operation(o *testModelOperation) *testModelDelta {
 	delta := new(testModelDelta)
 	if o.NewInt != nil {
 		t.int = *o.NewInt
-		delta.Int = o.NewInt
+		valueCopy := t.int
+		delta.Int = &valueCopy
 	}
 	if o.NewIntPointer != nil {
 		t.intPointer = o.NewIntPointer

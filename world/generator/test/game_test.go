@@ -27,6 +27,19 @@ func TestGame_Int(t *testing.T) {
 	require.Equal(t, &testModelDelta{Int: &newValue}, delta)
 }
 
+// Structures with int with set operations defined for them have to return an int pointer in the delta
+// in order to make it nillable. This test makes sure that this pointer is unique so that further changes
+// to the structure doesn't change the meaning of the delta's output.
+func TestGame_IntDeltaPointerUnique(t *testing.T) {
+	model := defaultTestModel()
+
+	operation := testModelOperation{NewInt: intPointer(100)}
+	delta := model.Operation(&operation)
+	*operation.NewInt = 200
+
+	require.Equal(t, 100, *delta.Int)
+}
+
 func TestGame_IntPointer(t *testing.T) {
 	model := defaultTestModel()
 

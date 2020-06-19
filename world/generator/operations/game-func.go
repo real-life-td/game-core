@@ -96,14 +96,22 @@ func gameSetAction(operation *operation, receiverName string) []Code {
 	fieldName := operationFieldName(operation)
 	structField := Id(receiverName).Dot(operation.field)
 	operationField := valueReference(fieldName, operation.fieldType)
-	deltaField := Id("delta").Dot(strings.Title(operation.field))
 
-	return []Code{
-		If(Id("o").Dot(fieldName).Op("!=").Nil()).Block(
-			structField.Clone().Op("=").Add(operationField),
-			deltaField.Op("=").Add(Id("o").Dot(fieldName)))}
+	if operation.fieldType.Nillable {
+		return []Code{
+			If(Id("o").Dot(fieldName).Op("!=").Nil()).Block(
+				structField.Clone().Op("=").Add(operationField),
+				Id("delta").Dot(strings.Title(operation.field)).Op("=").Add(Id("o").Dot(fieldName)))}
+	} else {
+		return []Code{
+			If(Id("o").Dot(fieldName).Op("!=").Nil()).Block(
+				structField.Clone().Op("=").Add(operationField),
+				Id("valueCopy").Op(":=").Add(structField.Clone()),
+				Id("delta").Dot(strings.Title(operation.field)).Op("=").Op("&").Id("valueCopy"))}
+	}
+
+
 }
-
 func gamePutAction(operation *operation, receiverName string) []Code {
 	if !operation.fieldType.IsMap {
 		panic(errors.New("game-func: Cannot create put function for non-map type"))
