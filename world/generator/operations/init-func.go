@@ -51,7 +51,7 @@ func initAddAction(operation *operation, receiverName string) []Code {
 
 	add := structField.Clone().Op("=").Append(structField.Clone(), Id("o").Dot(fieldName).Op("..."))
 
-	return []Code{ifNil, add}
+	return []Code{If(Id("o").Dot(fieldName).Op("!=").Nil()).Block(ifNil, add)}
 }
 
 func initRemoveAction(operation *operation, receiverName string) []Code {
@@ -74,17 +74,17 @@ func initRemoveAction(operation *operation, receiverName string) []Code {
 				structField.Clone().Index(Id("indexOf")).Op("=").Add(structField.Clone()).Index(Id("lastIndex")),
 				structField.Clone().Op("=").Add(structField.Clone()).Index(Op(":").Id("lastIndex")))))
 
-	return []Code{ifNotNil}
+	return []Code{If(Id("o").Dot(fieldName).Op("!=").Nil()).Block(ifNotNil)}
 }
 
-func initSetConnections(operation *operation, receiverName string) []Code {
+func initSetAction(operation *operation, receiverName string) []Code {
 	fieldName := operationFieldName(operation)
 	structField := Id(receiverName).Dot(operation.field)
+	operationField := valueReference(fieldName, operation.fieldType)
 
-	if operation.fieldType.Nillable {
-		return []Code{structField.Op("=").Id("o").Dot(fieldName)}
-	} else {
-		return []Code{structField.Op("=").Op("*").Id("o").Dot(fieldName)}
+	return []Code{If(Id("o").Dot(fieldName).Op("!=").Nil()).Block(
+		structField.Op("=").Add(operationField))}
+}
 	}
 
 }
