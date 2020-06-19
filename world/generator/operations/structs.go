@@ -45,9 +45,15 @@ type deltaField struct {
 	fieldName string
 }
 
+type typedDeltaField struct {
+	deltaField
+	fieldType parsing.GoType
+}
+
 func writeOperationStructs(file *File, structName string, structOperations StageOperations) {
-	// Map from field name to type for all fields that need to be a part of the delta structure
-	neededDeltaFields := make(map[deltaField]parsing.GoType)
+	neededDeltaFields := make([]typedDeltaField, 0)
+	// Keeps track of what field name + delta type combos are already in neededDeltaFields
+	resistedDeltaFields := make(map[deltaField]bool)
 
 	for stage := initStage; stage < numStages; stage++ {
 		operations := structOperations.get(stage)
@@ -71,8 +77,18 @@ func writeOperationStructs(file *File, structName string, structOperations Stage
 			}
 
 			if operation.stage == gameStage {
-				deltaField := deltaField{deltaType: actionDeltaType[operation.action], fieldName: operation.field}
-				neededDeltaFields[deltaField] = operation.fieldType
+				typedDeltaField := typedDeltaField{
+					deltaField: deltaField{
+						deltaType: actionDeltaType[operation.action],
+						fieldName: operation.field,
+					},
+					fieldType: operation.fieldType,
+				}
+
+				if !resistedDeltaFields[typedDeltaField.deltaField] {
+					resistedDeltaFields[typedDeltaField.deltaField]	= true
+					neededDeltaFields = append(neededDeltaFields, typedDeltaField)
+				}
 			}
 		}
 
@@ -84,22 +100,22 @@ func writeOperationStructs(file *File, structName string, structOperations Stage
 	}
 
 	deltaFields := make([]Code, 0)
-	for deltaField, fieldType := range neededDeltaFields {
+	for _, deltaField := range neededDeltaFields {
 		switch deltaField.deltaType {
 		case normal:
-			newField := Id(strings.Title(deltaField.fieldName)).Id(nillableType(fieldType))
+			newField := Id(strings.Title(deltaField.fieldName)).Id(nillableType(deltaField.fieldType))
 			deltaFields = append(deltaFields, newField)
 		case arrayRemoved:
 			removedField := Id(deltaArrayRemoveFieldName(deltaField.fieldName)).Index().Int()
 			deltaFields = append(deltaFields, removedField)
 		case arrayAdded:
-			addedField := Id(deltaArrayAddFieldName(deltaField.fieldName)).Id(fieldType.Value)
+			addedField := Id(deltaArrayAddFieldName(deltaField.fieldName)).Id(deltaField.fieldType.Value)
 			deltaFields = append(deltaFields, addedField)
 		case mapDelete:
-			deletedField := Id(deltaMapDeleteFieldName(deltaField.fieldName)).Index().Id(fieldType.MapKey.Value)
+			deletedField := Id(deltaMapDeleteFieldName(deltaField.fieldName)).Index().Id(deltaField.fieldType.MapKey.Value)
 			deltaFields = append(deltaFields, deletedField)
 		case mapNew:
-			newField := Id(deltaMapNewFieldName(deltaField.fieldName)).Id(fieldType.Value)
+			newField := Id(deltaMapNewFieldName(deltaField.fieldName)).Id(deltaField.fieldType.Value)
 			deltaFields = append(deltaFields, newField)
 		}
 	}

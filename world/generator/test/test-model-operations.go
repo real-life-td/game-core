@@ -35,15 +35,15 @@ type testModelOperation struct {
 	DeleteIntPointerMap      []*int
 }
 type testModelDelta struct {
+	Int                  *int
 	IntPointer           *int
+	IntArray             []int
 	AddedIntArray        []int
 	RemovedIntArray      []int
-	DeletedIntPointerMap []*int
-	Int                  *int
-	IntArray             []int
 	NewIntMapInt         map[int]int
 	DeletedIntMapInt     []int
 	NewIntPointerMap     map[*int]*int
+	DeletedIntPointerMap []*int
 }
 
 func (t *testModel) InitOperation(o *testModelInitOperation) {
