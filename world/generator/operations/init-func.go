@@ -22,12 +22,16 @@ func writeInitFunc(file *File, structName string, initOperations []*operation) {
 		case removeAction:
 			actionCode = initRemoveAction(operation, receiverId)
 		case setAction:
-			actionCode = initSetConnections(operation, receiverId)
+			actionCode = initSetAction(operation, receiverId)
+		case putAction:
+			actionCode = initPutAction(operation, receiverId)
+		case putMultipleAction:
+			actionCode = initPutMultipleAction(operation, receiverId)
+		case deleteAction:
+			actionCode = initDeleteAction(operation, receiverId)
 		}
 
-		fieldName := operationFieldName(operation)
-		operationCode = append(operationCode,
-			If(Id("o").Dot(fieldName).Op("!=").Nil()).Block(actionCode...))
+		operationCode = append(operationCode, actionCode...)
 	}
 
 	operationStruct := Id("o").Op("*").Id(operationStructName(initStage, structName))

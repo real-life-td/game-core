@@ -28,6 +28,12 @@ func writeGameFunc(file *File, structName string, gameOperations []*operation) {
 			actionCode = gameRemoveAction(operation, receiverId)
 		case setAction:
 			actionCode = gameSetAction(operation, receiverId)
+		case putAction:
+			actionCode = gamePutAction(operation, receiverId)
+		case putMultipleAction:
+			actionCode = gamePutMultipleAction(operation, receiverId)
+		case deleteAction:
+			actionCode = gameDeleteAction(operation, receiverId)
 		}
 
 		operationCode = append(operationCode, actionCode...)
@@ -97,5 +103,56 @@ func gameSetAction(operation *operation, receiverName string) []Code {
 			structField.Clone().Op("=").Add(operationField),
 			deltaField.Op("=").Add(Id("o").Dot(fieldName)))}
 }
+
+func gamePutAction(operation *operation, receiverName string) []Code {
+	if !operation.fieldType.IsMap {
+		panic(errors.New("game-func: Cannot create put function for non-map type"))
 	}
+
+	keyFieldName, valueFieldName := operationMapFieldNames(operation)
+	structField := Id(receiverName).Dot(operation.field)
+	keyFieldValue := valueReference(keyFieldName, *operation.fieldType.MapKey)
+	valueFieldValue := valueReference(valueFieldName, *operation.fieldType.MapValue)
+	deltaField := Id("delta").Dot(deltaMapNewFieldName(operation.field))
+
+	return  []Code{If(Id("o").Dot(keyFieldName).Op("!=").Nil()).Block(
+		structField.Index(keyFieldValue.Clone()).Op("=").Add(valueFieldValue.Clone()),
+		If(deltaField.Clone().Op("==").Nil()).Block(
+			deltaField.Clone().Op("=").Make(Id(operation.fieldType.Value))),
+		deltaField.Clone().Index(keyFieldValue.Clone()).Op("=").Add(valueFieldValue.Clone()))}
+}
+
+func gamePutMultipleAction(operation *operation, receiverName string) []Code {
+	if !operation.fieldType.IsMap {
+		panic(errors.New("game-func: Cannot create put_multiple function for non-map type"))
+	}
+
+	fieldName := operationFieldName(operation)
+	structField := Id(receiverName).Dot(operation.field)
+	deltaField := Id("delta").Dot(deltaMapNewFieldName(operation.field))
+
+	return  []Code{If(Id("o").Dot(fieldName).Op("!=").Nil()).Block(
+		For(List(Id("key"), Id("value")).Op(":=").Range().Id("o").Dot(fieldName)).Block(
+			structField.Index(Id("key")).Op("=").Add(Id("value")),
+			If(deltaField.Clone().Op("==").Nil()).Block(
+				deltaField.Clone().Op("=").Make(Id(operation.fieldType.Value))),
+			deltaField.Clone().Index(Id("key")).Op("=").Add(Id("value").Clone())))}
+}
+
+
+func gameDeleteAction(operation *operation, receiverName string) []Code {
+	if !operation.fieldType.IsMap {
+		panic(errors.New("game-func: Cannot create put function for non-map type"))
+	}
+
+	fieldName := operationFieldName(operation)
+	structField := Id(receiverName).Dot(operation.field)
+	deltaField := Id("delta").Dot(deltaMapDeleteFieldName(operation.field))
+
+	return []Code{If(Id("o").Dot(fieldName).Op("!=").Nil()).Block(
+		For(List(Id("_"), Id("toDelete")).Op(":=").Range().Id("o").Dot(fieldName)).Block(
+			Id("delete").Call(structField, Id("toDelete")),
+			If(deltaField.Clone().Op("==").Nil()).Block(
+				deltaField.Clone().Op("=").Make(Index().Id(operation.fieldType.MapKey.Value), Lit(0))),
+			deltaField.Clone().Op("=").Append(deltaField.Clone(), Id("toDelete"))))}
 }
