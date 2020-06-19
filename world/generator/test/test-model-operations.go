@@ -5,23 +5,45 @@ package test
 // !!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!!
 
 type testModelInitOperation struct {
-	NewInt             *int
-	NewIntPointer      *int
-	NewIntArray        []int
-	AdditionalIntArray []int
-	ToRemoveIntArray   []int
+	NewInt                   *int
+	NewIntPointer            *int
+	NewIntArray              []int
+	AdditionalIntArray       []int
+	ToRemoveIntArray         []int
+	PutKeyIntMapInt          *int
+	PutValueIntMapInt        *int
+	PutMultipleIntMapInt     map[int]int
+	DeleteIntMapInt          []int
+	PutKeyIntPointerMap      *int
+	PutValueIntPointerMap    *int
+	PutMultipleIntPointerMap map[*int]*int
+	DeleteIntPointerMap      []*int
 }
 type testModelOperation struct {
-	NewInt             *int
-	NewIntPointer      *int
-	NewIntArray        []int
-	AdditionalIntArray []int
-	ToRemoveIntArray   []int
+	NewInt                   *int
+	NewIntPointer            *int
+	NewIntArray              []int
+	AdditionalIntArray       []int
+	ToRemoveIntArray         []int
+	PutKeyIntMapInt          *int
+	PutValueIntMapInt        *int
+	PutMultipleIntMapInt     map[int]int
+	DeleteIntMapInt          []int
+	PutKeyIntPointerMap      *int
+	PutValueIntPointerMap    *int
+	PutMultipleIntPointerMap map[*int]*int
+	DeleteIntPointerMap      []*int
 }
 type testModelDelta struct {
-	int        *int
-	intPointer *int
-	intArray   []int
+	IntPointer           *int
+	AddedIntArray        []int
+	RemovedIntArray      []int
+	DeletedIntPointerMap []*int
+	Int                  *int
+	IntArray             []int
+	NewIntMapInt         map[int]int
+	DeletedIntMapInt     []int
+	NewIntPointerMap     map[*int]*int
 }
 
 func (t *testModel) InitOperation(o *testModelInitOperation) {
@@ -34,12 +56,6 @@ func (t *testModel) InitOperation(o *testModelInitOperation) {
 	if o.NewIntArray != nil {
 		t.intArray = o.NewIntArray
 	}
-	if o.AdditionalIntArray != nil {
-		if t.intArray == nil {
-			t.intArray = make([]int, 0)
-		}
-		t.intArray = append(t.intArray, o.AdditionalIntArray...)
-	}
 	if o.ToRemoveIntArray != nil {
 		if t.intArray != nil {
 			for _, toRemove := range o.ToRemoveIntArray {
@@ -56,6 +72,38 @@ func (t *testModel) InitOperation(o *testModelInitOperation) {
 					t.intArray = t.intArray[:lastIndex]
 				}
 			}
+		}
+	}
+	if o.AdditionalIntArray != nil {
+		if t.intArray == nil {
+			t.intArray = make([]int, 0)
+		}
+		t.intArray = append(t.intArray, o.AdditionalIntArray...)
+	}
+	if o.DeleteIntMapInt != nil {
+		for _, toDelete := range o.DeleteIntMapInt {
+			delete(t.intMapInt, toDelete)
+		}
+	}
+	if o.DeleteIntPointerMap != nil {
+		for _, toDelete := range o.DeleteIntPointerMap {
+			delete(t.intPointerMap, toDelete)
+		}
+	}
+	if o.PutKeyIntMapInt != nil {
+		t.intMapInt[*o.PutKeyIntMapInt] = *o.PutValueIntMapInt
+	}
+	if o.PutKeyIntPointerMap != nil {
+		t.intPointerMap[o.PutKeyIntPointerMap] = o.PutValueIntPointerMap
+	}
+	if o.PutMultipleIntMapInt != nil {
+		for key, value := range o.PutMultipleIntMapInt {
+			t.intMapInt[key] = value
+		}
+	}
+	if o.PutMultipleIntPointerMap != nil {
+		for key, value := range o.PutMultipleIntPointerMap {
+			t.intPointerMap[key] = value
 		}
 	}
 }
@@ -63,28 +111,18 @@ func (t *testModel) Operation(o *testModelOperation) *testModelDelta {
 	delta := new(testModelDelta)
 	if o.NewInt != nil {
 		t.int = *o.NewInt
-		delta.int = &t.int
+		delta.Int = o.NewInt
 	}
 	if o.NewIntPointer != nil {
 		t.intPointer = o.NewIntPointer
-		delta.intPointer = t.intPointer
+		delta.IntPointer = o.NewIntPointer
 	}
 	if o.NewIntArray != nil {
 		t.intArray = o.NewIntArray
-		delta.intArray = t.intArray
-	}
-	if o.AdditionalIntArray != nil {
-		if len(o.AdditionalIntArray) != 0 {
-			if t.intArray == nil {
-				t.intArray = make([]int, 0)
-			}
-			t.intArray = append(t.intArray, o.AdditionalIntArray...)
-			delta.intArray = t.intArray
-		}
+		delta.IntArray = o.NewIntArray
 	}
 	if o.ToRemoveIntArray != nil {
 		if t.intArray != nil {
-			removedAny := false
 			for _, toRemove := range o.ToRemoveIntArray {
 				indexOf := -1
 				for i, elm := range t.intArray {
@@ -97,12 +135,74 @@ func (t *testModel) Operation(o *testModelOperation) *testModelDelta {
 					lastIndex := len(t.intArray) - 1
 					t.intArray[indexOf] = t.intArray[lastIndex]
 					t.intArray = t.intArray[:lastIndex]
-					removedAny = true
+					if delta.RemovedIntArray == nil {
+						delta.RemovedIntArray = make([]int, 0)
+					}
+					delta.RemovedIntArray = append(delta.RemovedIntArray, indexOf)
 				}
 			}
-			if removedAny {
-				delta.intArray = t.intArray
+		}
+	}
+	if o.AdditionalIntArray != nil {
+		if len(o.AdditionalIntArray) != 0 {
+			if t.intArray == nil {
+				t.intArray = make([]int, 0)
 			}
+			t.intArray = append(t.intArray, o.AdditionalIntArray...)
+			if delta.AddedIntArray == nil {
+				delta.AddedIntArray = make([]int, 0)
+			}
+			delta.AddedIntArray = append(delta.AddedIntArray, o.AdditionalIntArray...)
+		}
+	}
+	if o.DeleteIntMapInt != nil {
+		for _, toDelete := range o.DeleteIntMapInt {
+			delete(t.intMapInt, toDelete)
+			if delta.DeletedIntMapInt == nil {
+				delta.DeletedIntMapInt = make([]int, 0)
+			}
+			delta.DeletedIntMapInt = append(delta.DeletedIntMapInt, toDelete)
+		}
+	}
+	if o.DeleteIntPointerMap != nil {
+		for _, toDelete := range o.DeleteIntPointerMap {
+			delete(t.intPointerMap, toDelete)
+			if delta.DeletedIntPointerMap == nil {
+				delta.DeletedIntPointerMap = make([]*int, 0)
+			}
+			delta.DeletedIntPointerMap = append(delta.DeletedIntPointerMap, toDelete)
+		}
+	}
+	if o.PutKeyIntMapInt != nil {
+		t.intMapInt[*o.PutKeyIntMapInt] = *o.PutValueIntMapInt
+		if delta.NewIntMapInt == nil {
+			delta.NewIntMapInt = make(map[int]int)
+		}
+		delta.NewIntMapInt[*o.PutKeyIntMapInt] = *o.PutValueIntMapInt
+	}
+	if o.PutKeyIntPointerMap != nil {
+		t.intPointerMap[o.PutKeyIntPointerMap] = o.PutValueIntPointerMap
+		if delta.NewIntPointerMap == nil {
+			delta.NewIntPointerMap = make(map[*int]*int)
+		}
+		delta.NewIntPointerMap[o.PutKeyIntPointerMap] = o.PutValueIntPointerMap
+	}
+	if o.PutMultipleIntMapInt != nil {
+		for key, value := range o.PutMultipleIntMapInt {
+			t.intMapInt[key] = value
+			if delta.NewIntMapInt == nil {
+				delta.NewIntMapInt = make(map[int]int)
+			}
+			delta.NewIntMapInt[key] = value
+		}
+	}
+	if o.PutMultipleIntPointerMap != nil {
+		for key, value := range o.PutMultipleIntPointerMap {
+			t.intPointerMap[key] = value
+			if delta.NewIntPointerMap == nil {
+				delta.NewIntPointerMap = make(map[*int]*int)
+			}
+			delta.NewIntPointerMap[key] = value
 		}
 	}
 	return delta
