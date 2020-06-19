@@ -16,6 +16,8 @@ var actionFieldPrefix = map[action]string{
 	setAction:    "New",
 	addAction:    "Additional",
 	removeAction: "ToRemove",
+	putMultipleAction: "PutMultiple",
+	deleteAction: "Delete",
 }
 
 func writeOperationStructs(file *jen.File, structName string, structOperations StageOperations) {

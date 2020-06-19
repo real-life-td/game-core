@@ -20,8 +20,11 @@ const (
 const (
 	// Order based on precedence (which actions should be applied first)
 	setAction action = iota
-	addAction
 	removeAction
+	addAction
+	deleteAction
+	putAction
+	putMultipleAction
 )
 
 var tokenToStage = map[string]stage{
@@ -33,6 +36,9 @@ var tokenToAction = map[string]action{
 	"SET":    setAction,
 	"ADD":    addAction,
 	"REMOVE": removeAction,
+	"PUT": putAction,
+	"PUT_MULTIPLE": putMultipleAction,
+	"DELETE": deleteAction,
 }
 
 type operation struct {
