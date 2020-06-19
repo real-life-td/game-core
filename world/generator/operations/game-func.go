@@ -3,6 +3,7 @@ package operations
 import (
 	"errors"
 	. "github.com/dave/jennifer/jen"
+	"strings"
 )
 
 func writeGameFunc(file *File, structName string, gameOperations []*operation) {
@@ -26,12 +27,10 @@ func writeGameFunc(file *File, structName string, gameOperations []*operation) {
 		case removeAction:
 			actionCode = gameRemoveAction(operation, receiverId)
 		case setAction:
-			actionCode = gameSetConnections(operation, receiverId)
+			actionCode = gameSetAction(operation, receiverId)
 		}
 
-		fieldName := operationFieldName(operation)
-		operationCode = append(operationCode,
-			If(Id("o").Dot(fieldName).Op("!=").Nil()).Block(actionCode...))
+		operationCode = append(operationCode, actionCode...)
 	}
 
 	operationCode = append(operationCode, Return(Id("delta")))
@@ -47,14 +46,17 @@ func gameAddAction(operation *operation, receiverName string) []Code {
 
 	fieldName := operationFieldName(operation)
 	structField := Id(receiverName).Dot(operation.field)
+	deltaField := Id("delta").Dot(deltaArrayAddFieldName(operation.field))
 
 	ifNotNilOrEmpty := If(Len(Id("o").Dot(fieldName)).Op("!=").Lit(0)).Block(
 		If(structField.Clone().Op("==").Nil()).Block(
 			structField.Clone().Op("=").Make(Id(operation.fieldType.Value), Lit(0))),
 		structField.Clone().Op("=").Append(structField.Clone(), Id("o").Dot(fieldName).Op("...")),
-		Id("delta").Dot(operation.field).Op("=").Add(structField.Clone()))
+		If(deltaField.Clone().Op("==").Nil()).Block(
+			deltaField.Clone().Op("=").Make(Id(operation.fieldType.Value), Lit(0))),
+		deltaField.Clone().Op("=").Append(deltaField.Clone(), Id("o").Dot(fieldName).Op("...")))
 
-	return []Code{ifNotNilOrEmpty}
+	return []Code{If(Id("o").Dot(fieldName).Op("!=").Nil()).Block(ifNotNilOrEmpty)}
 }
 
 func gameRemoveAction(operation *operation, receiverName string) []Code {
@@ -64,9 +66,9 @@ func gameRemoveAction(operation *operation, receiverName string) []Code {
 
 	fieldName := operationFieldName(operation)
 	structField := Id(receiverName).Dot(operation.field)
+	deltaField := Id("delta").Dot(deltaArrayRemoveFieldName(operation.field))
 
 	ifNotNilOrEmpty := If(structField.Clone().Op("!=").Nil()).Block(
-		Id("removedAny").Op(":=").Lit(false),
 		For(List(Id("_"), Id("toRemove")).Op(":=").Range().Id("o").Dot(fieldName)).Block(
 			Id("indexOf").Op(":=").Lit(-1),
 			For(List(Id("i"), Id("elm")).Op(":=").Range().Add(structField.Clone())).Block(
@@ -77,27 +79,23 @@ func gameRemoveAction(operation *operation, receiverName string) []Code {
 				Id("lastIndex").Op(":=").Len(structField.Clone()).Op("-").Lit(1),
 				structField.Clone().Index(Id("indexOf")).Op("=").Add(structField.Clone()).Index(Id("lastIndex")),
 				structField.Clone().Op("=").Add(structField.Clone()).Index(Op(":").Id("lastIndex")),
-				Id("removedAny").Op("=").Lit(true))),
-		If(Id("removedAny")).Block(
-			Id("delta").Dot(operation.field).Op("=").Add(structField.Clone())))
+				If(deltaField.Clone().Op("==").Nil()).Block(
+					deltaField.Clone().Op("=").Make(Index().Int(), Lit(0))),
+				deltaField.Clone().Op("=").Append(deltaField.Clone(), Id("indexOf")))))
 
-	return []Code{ifNotNilOrEmpty}
+	return []Code{If(Id("o").Dot(fieldName).Op("!=").Nil()).Block(ifNotNilOrEmpty)}
 }
 
-func gameSetConnections(operation *operation, receiverName string) []Code {
+func gameSetAction(operation *operation, receiverName string) []Code {
 	fieldName := operationFieldName(operation)
 	structField := Id(receiverName).Dot(operation.field)
-	deltaField := Id("delta").Dot(operation.field)
+	operationField := valueReference(fieldName, operation.fieldType)
+	deltaField := Id("delta").Dot(strings.Title(operation.field))
 
-	if operation.fieldType.Nillable {
-		return []Code{
-			structField.Clone().Op("=").Id("o").Dot(fieldName),
-			deltaField.Op("=").Add(structField.Clone()),
-		}
-	} else {
-		return []Code{
-			structField.Clone().Op("=").Op("*").Id("o").Dot(fieldName),
-			deltaField.Op("=").Op("&").Add(structField.Clone()),
-		}
+	return []Code{
+		If(Id("o").Dot(fieldName).Op("!=").Nil()).Block(
+			structField.Clone().Op("=").Add(operationField),
+			deltaField.Op("=").Add(Id("o").Dot(fieldName)))}
+}
 	}
 }
