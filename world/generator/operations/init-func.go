@@ -85,6 +85,43 @@ func initSetAction(operation *operation, receiverName string) []Code {
 	return []Code{If(Id("o").Dot(fieldName).Op("!=").Nil()).Block(
 		structField.Op("=").Add(operationField))}
 }
+
+func initPutAction(operation *operation, receiverName string) []Code {
+	if !operation.fieldType.IsMap {
+		panic(errors.New("init-func: Cannot create put function for non-map type"))
 	}
 
+	keyFieldName, valueFieldName := operationMapFieldNames(operation)
+	structField := Id(receiverName).Dot(operation.field)
+	keyFieldValue := valueReference(keyFieldName, *operation.fieldType.MapKey)
+	valueFieldValue := valueReference(valueFieldName, *operation.fieldType.MapValue)
+
+	return  []Code{If(Id("o").Dot(keyFieldName).Op("!=").Nil()).Block(
+		structField.Index(keyFieldValue).Op("=").Add(valueFieldValue))}
+}
+
+func initPutMultipleAction(operation *operation, receiverName string) []Code {
+	if !operation.fieldType.IsMap {
+		panic(errors.New("init-func: Cannot create put_multiple function for non-map type"))
+	}
+
+	fieldName := operationFieldName(operation)
+	structField := Id(receiverName).Dot(operation.field)
+
+	return  []Code{If(Id("o").Dot(fieldName).Op("!=").Nil()).Block(
+		For(List(Id("key"), Id("value")).Op(":=").Range().Id("o").Dot(fieldName)).Block(
+			structField.Index(Id("key")).Op("=").Add(Id("value"))))}
+}
+
+func initDeleteAction(operation *operation, receiverName string) []Code {
+	if !operation.fieldType.IsMap {
+		panic(errors.New("init-func: Cannot create delete function for non-map type"))
+	}
+
+	fieldName := operationFieldName(operation)
+	structField := Id(receiverName).Dot(operation.field)
+
+	return []Code{If(Id("o").Dot(fieldName).Op("!=").Nil()).Block(
+		For(List(Id("_"), Id("toDelete")).Op(":=").Range().Id("o").Dot(fieldName)).Block(
+			Id("delete").Call(structField, Id("toDelete"))))}
 }
