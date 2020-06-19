@@ -15,12 +15,32 @@ type BuildingOperation struct {
 	NewConnections        []*Connection
 }
 type BuildingDelta struct {
-	connections []*Connection
+	AddedConnections   []*Connection
+	RemovedConnections []int
+	Connections        []*Connection
 }
 
 func (b *Building) InitOperation(o *BuildingInitOperation) {
 	if o.NewConnections != nil {
 		b.connections = o.NewConnections
+	}
+	if o.ToRemoveConnections != nil {
+		if b.connections != nil {
+			for _, toRemove := range o.ToRemoveConnections {
+				indexOf := -1
+				for i, elm := range b.connections {
+					if elm == toRemove {
+						indexOf = i
+						break
+					}
+				}
+				if indexOf != -1 {
+					lastIndex := len(b.connections) - 1
+					b.connections[indexOf] = b.connections[lastIndex]
+					b.connections = b.connections[:lastIndex]
+				}
+			}
+		}
 	}
 	if o.AdditionalConnections != nil {
 		if b.connections == nil {
@@ -28,6 +48,13 @@ func (b *Building) InitOperation(o *BuildingInitOperation) {
 		}
 		b.connections = append(b.connections, o.AdditionalConnections...)
 	}
+}
+func (b *Building) Operation(o *BuildingOperation) *BuildingDelta {
+	delta := new(BuildingDelta)
+	if o.NewConnections != nil {
+		b.connections = o.NewConnections
+		delta.Connections = o.NewConnections
+	}
 	if o.ToRemoveConnections != nil {
 		if b.connections != nil {
 			for _, toRemove := range o.ToRemoveConnections {
@@ -42,48 +69,25 @@ func (b *Building) InitOperation(o *BuildingInitOperation) {
 					lastIndex := len(b.connections) - 1
 					b.connections[indexOf] = b.connections[lastIndex]
 					b.connections = b.connections[:lastIndex]
+					if delta.RemovedConnections == nil {
+						delta.RemovedConnections = make([]int, 0)
+					}
+					delta.RemovedConnections = append(delta.RemovedConnections, indexOf)
 				}
 			}
 		}
 	}
-}
-func (b *Building) Operation(o *BuildingOperation) *BuildingDelta {
-	delta := new(BuildingDelta)
 	if o.AdditionalConnections != nil {
 		if len(o.AdditionalConnections) != 0 {
 			if b.connections == nil {
 				b.connections = make([]*Connection, 0)
 			}
 			b.connections = append(b.connections, o.AdditionalConnections...)
-			delta.connections = b.connections
-		}
-	}
-	if o.ToRemoveConnections != nil {
-		if b.connections != nil {
-			removedAny := false
-			for _, toRemove := range o.ToRemoveConnections {
-				indexOf := -1
-				for i, elm := range b.connections {
-					if elm == toRemove {
-						indexOf = i
-						break
-					}
-				}
-				if indexOf != -1 {
-					lastIndex := len(b.connections) - 1
-					b.connections[indexOf] = b.connections[lastIndex]
-					b.connections = b.connections[:lastIndex]
-					removedAny = true
-				}
+			if delta.AddedConnections == nil {
+				delta.AddedConnections = make([]*Connection, 0)
 			}
-			if removedAny {
-				delta.connections = b.connections
-			}
+			delta.AddedConnections = append(delta.AddedConnections, o.AdditionalConnections...)
 		}
-	}
-	if o.NewConnections != nil {
-		b.connections = o.NewConnections
-		delta.connections = b.connections
 	}
 	return delta
 }
