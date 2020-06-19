@@ -110,7 +110,6 @@ func gameSetAction(operation *operation, receiverName string) []Code {
 				Id("delta").Dot(strings.Title(operation.field)).Op("=").Op("&").Id("valueCopy"))}
 	}
 
-
 }
 func gamePutAction(operation *operation, receiverName string) []Code {
 	if !operation.fieldType.IsMap {
@@ -123,7 +122,7 @@ func gamePutAction(operation *operation, receiverName string) []Code {
 	valueFieldValue := valueReference(valueFieldName, *operation.fieldType.MapValue)
 	deltaField := Id("delta").Dot(deltaMapNewFieldName(operation.field))
 
-	return  []Code{If(Id("o").Dot(keyFieldName).Op("!=").Nil()).Block(
+	return []Code{If(Id("o").Dot(keyFieldName).Op("!=").Nil()).Block(
 		structField.Index(keyFieldValue.Clone()).Op("=").Add(valueFieldValue.Clone()),
 		If(deltaField.Clone().Op("==").Nil()).Block(
 			deltaField.Clone().Op("=").Make(Id(operation.fieldType.Value))),
@@ -139,14 +138,13 @@ func gamePutMultipleAction(operation *operation, receiverName string) []Code {
 	structField := Id(receiverName).Dot(operation.field)
 	deltaField := Id("delta").Dot(deltaMapNewFieldName(operation.field))
 
-	return  []Code{If(Id("o").Dot(fieldName).Op("!=").Nil()).Block(
+	return []Code{If(Id("o").Dot(fieldName).Op("!=").Nil()).Block(
 		For(List(Id("key"), Id("value")).Op(":=").Range().Id("o").Dot(fieldName)).Block(
 			structField.Index(Id("key")).Op("=").Add(Id("value")),
 			If(deltaField.Clone().Op("==").Nil()).Block(
 				deltaField.Clone().Op("=").Make(Id(operation.fieldType.Value))),
 			deltaField.Clone().Index(Id("key")).Op("=").Add(Id("value").Clone())))}
 }
-
 
 func gameDeleteAction(operation *operation, receiverName string) []Code {
 	if !operation.fieldType.IsMap {

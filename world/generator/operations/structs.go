@@ -13,16 +13,17 @@ var stagePrefix = map[stage]string{
 }
 
 var actionFieldPrefix = map[action]string{
-	setAction:    "New",
-	addAction:    "Additional",
-	removeAction: "ToRemove",
+	setAction:         "New",
+	addAction:         "Additional",
+	removeAction:      "ToRemove",
 	putMultipleAction: "PutMultiple",
-	deleteAction: "Delete",
+	deleteAction:      "Delete",
 }
 
 // Fields in delta structures can be shared by different actions. The delta type helps identify when
 // that should happen and when new fields need to be generated.
 type deltaType int
+
 const (
 	normal deltaType = iota
 	arrayRemoved
@@ -32,12 +33,12 @@ const (
 )
 
 var actionDeltaType = map[action]deltaType{
-	setAction:    normal,
-	addAction:    arrayAdded,
-	removeAction: arrayRemoved,
-	putAction: mapNew,
+	setAction:         normal,
+	addAction:         arrayAdded,
+	removeAction:      arrayRemoved,
+	putAction:         mapNew,
 	putMultipleAction: mapNew,
-	deleteAction: mapDelete,
+	deleteAction:      mapDelete,
 }
 
 type deltaField struct {
@@ -86,7 +87,7 @@ func writeOperationStructs(file *File, structName string, structOperations Stage
 				}
 
 				if !resistedDeltaFields[typedDeltaField.deltaField] {
-					resistedDeltaFields[typedDeltaField.deltaField]	= true
+					resistedDeltaFields[typedDeltaField.deltaField] = true
 					neededDeltaFields = append(neededDeltaFields, typedDeltaField)
 				}
 			}

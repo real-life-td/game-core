@@ -16,11 +16,9 @@ type GoType struct {
 	IsMap    bool
 	Nillable bool
 
-	MapKey *GoType
+	MapKey   *GoType
 	MapValue *GoType
 }
-
-
 
 func FindStructures(fileAST *ast.File) []*GoStruct {
 	structures := make([]*GoStruct, 0)
@@ -59,7 +57,7 @@ func GoTypeFromExpr(e ast.Expr) GoType {
 	case *ast.StarExpr:
 		return GoType{"*" + GoTypeFromExpr(v.X).Value, false, false, true, nil, nil}
 	case *ast.SelectorExpr:
-		return GoType{GoTypeFromExpr(v.X).Value + "." + v.Sel.Name, false, false ,false, nil, nil}
+		return GoType{GoTypeFromExpr(v.X).Value + "." + v.Sel.Name, false, false, false, nil, nil}
 	case *ast.MapType:
 		keyType := GoTypeFromExpr(v.Key)
 		valueType := GoTypeFromExpr(v.Value)

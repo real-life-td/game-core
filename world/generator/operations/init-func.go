@@ -96,7 +96,7 @@ func initPutAction(operation *operation, receiverName string) []Code {
 	keyFieldValue := valueReference(keyFieldName, *operation.fieldType.MapKey)
 	valueFieldValue := valueReference(valueFieldName, *operation.fieldType.MapValue)
 
-	return  []Code{If(Id("o").Dot(keyFieldName).Op("!=").Nil()).Block(
+	return []Code{If(Id("o").Dot(keyFieldName).Op("!=").Nil()).Block(
 		structField.Index(keyFieldValue).Op("=").Add(valueFieldValue))}
 }
 
@@ -108,7 +108,7 @@ func initPutMultipleAction(operation *operation, receiverName string) []Code {
 	fieldName := operationFieldName(operation)
 	structField := Id(receiverName).Dot(operation.field)
 
-	return  []Code{If(Id("o").Dot(fieldName).Op("!=").Nil()).Block(
+	return []Code{If(Id("o").Dot(fieldName).Op("!=").Nil()).Block(
 		For(List(Id("key"), Id("value")).Op(":=").Range().Id("o").Dot(fieldName)).Block(
 			structField.Index(Id("key")).Op("=").Add(Id("value"))))}
 }

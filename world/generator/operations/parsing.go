@@ -33,12 +33,12 @@ var tokenToStage = map[string]stage{
 }
 
 var tokenToAction = map[string]action{
-	"SET":    setAction,
-	"ADD":    addAction,
-	"REMOVE": removeAction,
-	"PUT": putAction,
+	"SET":          setAction,
+	"ADD":          addAction,
+	"REMOVE":       removeAction,
+	"PUT":          putAction,
 	"PUT_MULTIPLE": putMultipleAction,
-	"DELETE": deleteAction,
+	"DELETE":       deleteAction,
 }
 
 type operation struct {

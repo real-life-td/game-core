@@ -91,18 +91,18 @@ func TestGame_IntMap_Put(t *testing.T) {
 	operation := testModelOperation{PutKeyIntMapInt: intPointer(100), PutValueIntMapInt: intPointer(200)}
 	delta := model.Operation(&operation)
 
-	require.Equal(t, map[int]int {5: 6, 7: 8, 100: 200}, model.intMapInt)
-	require.Equal(t, &testModelDelta{NewIntMapInt: map[int]int {100: 200}}, delta)
+	require.Equal(t, map[int]int{5: 6, 7: 8, 100: 200}, model.intMapInt)
+	require.Equal(t, &testModelDelta{NewIntMapInt: map[int]int{100: 200}}, delta)
 }
 
 func TestGame_IntMap_PutMultiple(t *testing.T) {
 	model := defaultTestModel()
 
-	newValues := map[int]int {100: 200, 300: 400}
+	newValues := map[int]int{100: 200, 300: 400}
 	operation := testModelOperation{PutMultipleIntMapInt: newValues}
 	delta := model.Operation(&operation)
 
-	require.Equal(t, map[int]int {5: 6, 7: 8, 100: 200, 300: 400}, model.intMapInt)
+	require.Equal(t, map[int]int{5: 6, 7: 8, 100: 200, 300: 400}, model.intMapInt)
 	require.Equal(t, &testModelDelta{NewIntMapInt: newValues}, delta)
 }
 
@@ -112,8 +112,8 @@ func TestGame_IntMap_Delete(t *testing.T) {
 	operation := testModelOperation{DeleteIntMapInt: []int{5}}
 	delta := model.Operation(&operation)
 
-	require.Equal(t, map[int]int {7: 8}, model.intMapInt)
-	require.Equal(t, &testModelDelta{DeletedIntMapInt: []int {5}}, delta)
+	require.Equal(t, map[int]int{7: 8}, model.intMapInt)
+	require.Equal(t, &testModelDelta{DeletedIntMapInt: []int{5}}, delta)
 }
 
 func TestGame_IntPointerMap_Put(t *testing.T) {
@@ -123,14 +123,14 @@ func TestGame_IntPointerMap_Put(t *testing.T) {
 	operation := testModelOperation{PutKeyIntPointerMap: &newKey, PutValueIntPointerMap: &newValue}
 	delta := model.Operation(&operation)
 
-	require.Equal(t, map[*int]*int {&newKey: &newValue}, model.intPointerMap)
-	require.Equal(t, &testModelDelta{NewIntPointerMap: map[*int]*int {&newKey: &newValue}}, delta)
+	require.Equal(t, map[*int]*int{&newKey: &newValue}, model.intPointerMap)
+	require.Equal(t, &testModelDelta{NewIntPointerMap: map[*int]*int{&newKey: &newValue}}, delta)
 }
 
 func TestGame_IntPointerMap_PutMultiple(t *testing.T) {
 	model := defaultTestModel()
 
-	newValues := map[*int]*int {intPointer(100): intPointer(200), intPointer(300): intPointer(400)}
+	newValues := map[*int]*int{intPointer(100): intPointer(200), intPointer(300): intPointer(400)}
 	operation := testModelOperation{PutMultipleIntPointerMap: newValues}
 	delta := model.Operation(&operation)
 
@@ -143,11 +143,11 @@ func TestGame_IntPointerMap_Delete(t *testing.T) {
 
 	key1, value1 := 100, 200
 	key2, value2 := 300, 400
-	model.intPointerMap = map[*int]*int {&key1: &value1, &key2: &value2}
+	model.intPointerMap = map[*int]*int{&key1: &value1, &key2: &value2}
 
-	operation := testModelOperation{DeleteIntPointerMap: []*int {&key1}}
+	operation := testModelOperation{DeleteIntPointerMap: []*int{&key1}}
 	delta := model.Operation(&operation)
 
-	require.Equal(t, map[*int]*int {&key2: &value2}, model.intPointerMap)
-	require.Equal(t, &testModelDelta{DeletedIntPointerMap: []*int {&key1}}, delta)
+	require.Equal(t, map[*int]*int{&key2: &value2}, model.intPointerMap)
+	require.Equal(t, &testModelDelta{DeletedIntPointerMap: []*int{&key1}}, delta)
 }
