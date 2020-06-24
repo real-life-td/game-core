@@ -12,10 +12,14 @@ const (
 	MobAttributeLength
 )
 
+func (m MobAttribute) ref() *MobAttribute {
+	return &m
+}
+
 type Mob struct {
 	id Id
 	*Node
-	attributes map[MobAttribute]interface{}
+	attributes map[MobAttribute]interface{} // GEN: INIT_STAGE(PUT,PUT_MULTIPLE,DELETE);GAME_STAGE(PUT, PUT_MULTIPLE,DELETE)
 }
 
 func (m *Mob) GetId() Id {

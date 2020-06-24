@@ -70,9 +70,7 @@ func initRemoveAction(operation *operation, receiverName string) []Code {
 					Id("indexOf").Op("=").Id("i"),
 					Break())),
 			If(Id("indexOf").Op("!=").Lit(-1)).Block(
-				Id("lastIndex").Op(":=").Len(structField.Clone()).Op("-").Lit(1),
-				structField.Clone().Index(Id("indexOf")).Op("=").Add(structField.Clone()).Index(Id("lastIndex")),
-				structField.Clone().Op("=").Add(structField.Clone()).Index(Op(":").Id("lastIndex")))))
+				structField.Clone().Op("=").Append(structField.Clone().Index(Op(":").Id("indexOf")), structField.Clone().Index(Id("indexOf").Op("+").Lit(1).Op(":")).Op("...")))))
 
 	return []Code{If(Id("o").Dot(fieldName).Op("!=").Nil()).Block(ifNotNil)}
 }

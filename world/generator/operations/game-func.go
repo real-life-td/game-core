@@ -3,7 +3,6 @@ package operations
 import (
 	"errors"
 	. "github.com/dave/jennifer/jen"
-	"strings"
 )
 
 func writeGameFunc(file *File, structName string, gameOperations []*operation) {
@@ -53,6 +52,11 @@ func gameAddAction(operation *operation, receiverName string) []Code {
 	fieldName := operationFieldName(operation)
 	structField := Id(receiverName).Dot(operation.field)
 	deltaField := Id("delta").Dot(deltaArrayAddFieldName(operation.field))
+	deltaArrayLengthField := Id("delta").Dot(deltaArrayLengthFieldName(operation.field))
+
+	assignInitialArrayLength := If(deltaArrayLengthField.Clone().Op("==").Nil()).Block(
+		Id("length").Op(":=").Len(structField.Clone()),
+		deltaArrayLengthField.Clone().Op("=").Op("&").Id("length"))
 
 	ifNotNilOrEmpty := If(Len(Id("o").Dot(fieldName)).Op("!=").Lit(0)).Block(
 		If(structField.Clone().Op("==").Nil()).Block(
@@ -62,7 +66,7 @@ func gameAddAction(operation *operation, receiverName string) []Code {
 			deltaField.Clone().Op("=").Make(Id(operation.fieldType.Value), Lit(0))),
 		deltaField.Clone().Op("=").Append(deltaField.Clone(), Id("o").Dot(fieldName).Op("...")))
 
-	return []Code{If(Id("o").Dot(fieldName).Op("!=").Nil()).Block(ifNotNilOrEmpty)}
+	return []Code{If(Id("o").Dot(fieldName).Op("!=").Nil()).Block(assignInitialArrayLength, ifNotNilOrEmpty)}
 }
 
 func gameRemoveAction(operation *operation, receiverName string) []Code {
@@ -73,6 +77,7 @@ func gameRemoveAction(operation *operation, receiverName string) []Code {
 	fieldName := operationFieldName(operation)
 	structField := Id(receiverName).Dot(operation.field)
 	deltaField := Id("delta").Dot(deltaArrayRemoveFieldName(operation.field))
+	deltaArrayLengthField := Id("delta").Dot(deltaArrayLengthFieldName(operation.field))
 
 	ifNotNilOrEmpty := If(structField.Clone().Op("!=").Nil()).Block(
 		For(List(Id("_"), Id("toRemove")).Op(":=").Range().Id("o").Dot(fieldName)).Block(
@@ -82,32 +87,35 @@ func gameRemoveAction(operation *operation, receiverName string) []Code {
 					Id("indexOf").Op("=").Id("i"),
 					Break())),
 			If(Id("indexOf").Op("!=").Lit(-1)).Block(
-				Id("lastIndex").Op(":=").Len(structField.Clone()).Op("-").Lit(1),
-				structField.Clone().Index(Id("indexOf")).Op("=").Add(structField.Clone()).Index(Id("lastIndex")),
-				structField.Clone().Op("=").Add(structField.Clone()).Index(Op(":").Id("lastIndex")),
+				structField.Clone().Op("=").Append(structField.Clone().Index(Op(":").Id("indexOf")), structField.Clone().Index(Id("indexOf").Op("+").Lit(1).Op(":")).Op("...")),
 				If(deltaField.Clone().Op("==").Nil()).Block(
 					deltaField.Clone().Op("=").Make(Index().Int(), Lit(0))),
 				deltaField.Clone().Op("=").Append(deltaField.Clone(), Id("indexOf")))))
 
-	return []Code{If(Id("o").Dot(fieldName).Op("!=").Nil()).Block(ifNotNilOrEmpty)}
+	assignInitialArrayLength := If(deltaArrayLengthField.Clone().Op("==").Nil()).Block(
+		Id("length").Op(":=").Len(structField.Clone()),
+		deltaArrayLengthField.Clone().Op("=").Op("&").Id("length"))
+
+	return []Code{If(Id("o").Dot(fieldName).Op("!=").Nil()).Block(ifNotNilOrEmpty, assignInitialArrayLength)}
 }
 
 func gameSetAction(operation *operation, receiverName string) []Code {
 	fieldName := operationFieldName(operation)
 	structField := Id(receiverName).Dot(operation.field)
 	operationField := valueReference(fieldName, operation.fieldType)
+	deltaField := Id("delta").Dot(deltaNormalFieldName(operation.field))
 
 	if operation.fieldType.Nillable {
 		return []Code{
 			If(Id("o").Dot(fieldName).Op("!=").Nil()).Block(
 				structField.Clone().Op("=").Add(operationField),
-				Id("delta").Dot(strings.Title(operation.field)).Op("=").Add(Id("o").Dot(fieldName)))}
+				deltaField.Clone().Op("=").Add(Id("o").Dot(fieldName)))}
 	} else {
 		return []Code{
 			If(Id("o").Dot(fieldName).Op("!=").Nil()).Block(
 				structField.Clone().Op("=").Add(operationField),
 				Id("valueCopy").Op(":=").Add(structField.Clone()),
-				Id("delta").Dot(strings.Title(operation.field)).Op("=").Op("&").Id("valueCopy"))}
+				deltaField.Clone().Op("=").Op("&").Id("valueCopy"))}
 	}
 
 }

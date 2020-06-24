@@ -2,8 +2,6 @@
 
 package test
 
-type derived float64
-
 type testModel struct {
 	int           int           // GEN: INIT_STAGE(SET);GAME_STAGE(SET)
 	intPointer    *int          // GEN: INIT_STAGE(SET);GAME_STAGE(SET)
