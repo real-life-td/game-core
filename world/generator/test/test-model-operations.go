@@ -404,11 +404,11 @@ func (op *testModelInitOperationStructIntArray) Set(new []int) *testModelInitOpe
 	op.intArraySet = new
 	return (*testModelInitOperationStruct)(op)
 }
-func (op *testModelInitOperationStructIntArray) Remove(toRemove []int) *testModelInitOperationStruct {
+func (op *testModelInitOperationStructIntArray) Remove(toRemove ...int) *testModelInitOperationStruct {
 	op.intArrayRemove = toRemove
 	return (*testModelInitOperationStruct)(op)
 }
-func (op *testModelInitOperationStructIntArray) Add(toAdd []int) *testModelInitOperationStruct {
+func (op *testModelInitOperationStructIntArray) Add(toAdd ...int) *testModelInitOperationStruct {
 	op.intArrayAdd = toAdd
 	return (*testModelInitOperationStruct)(op)
 }
@@ -418,7 +418,7 @@ type testModelInitOperationStructIntMapInt testModelInitOperationStruct
 func (op *testModelInitOperationStruct) IntMapInt() *testModelInitOperationStructIntMapInt {
 	return (*testModelInitOperationStructIntMapInt)(op)
 }
-func (op *testModelInitOperationStructIntMapInt) Delete(toDelete []int) *testModelInitOperationStruct {
+func (op *testModelInitOperationStructIntMapInt) Delete(toDelete ...int) *testModelInitOperationStruct {
 	op.intMapIntDelete = toDelete
 	return (*testModelInitOperationStruct)(op)
 }
@@ -447,7 +447,7 @@ type testModelInitOperationStructIntPointerMap testModelInitOperationStruct
 func (op *testModelInitOperationStruct) IntPointerMap() *testModelInitOperationStructIntPointerMap {
 	return (*testModelInitOperationStructIntPointerMap)(op)
 }
-func (op *testModelInitOperationStructIntPointerMap) Delete(toDelete []*int) *testModelInitOperationStruct {
+func (op *testModelInitOperationStructIntPointerMap) Delete(toDelete ...*int) *testModelInitOperationStruct {
 	op.intPointerMapDelete = toDelete
 	return (*testModelInitOperationStruct)(op)
 }
@@ -590,11 +590,11 @@ func (op *testModelOperationStructIntArray) Set(new []int) *testModelOperationSt
 	op.intArraySet = new
 	return (*testModelOperationStruct)(op)
 }
-func (op *testModelOperationStructIntArray) Remove(toRemove []int) *testModelOperationStruct {
+func (op *testModelOperationStructIntArray) Remove(toRemove ...int) *testModelOperationStruct {
 	op.intArrayRemove = toRemove
 	return (*testModelOperationStruct)(op)
 }
-func (op *testModelOperationStructIntArray) Add(toAdd []int) *testModelOperationStruct {
+func (op *testModelOperationStructIntArray) Add(toAdd ...int) *testModelOperationStruct {
 	op.intArrayAdd = toAdd
 	return (*testModelOperationStruct)(op)
 }
@@ -604,7 +604,7 @@ type testModelOperationStructIntMapInt testModelOperationStruct
 func (op *testModelOperationStruct) IntMapInt() *testModelOperationStructIntMapInt {
 	return (*testModelOperationStructIntMapInt)(op)
 }
-func (op *testModelOperationStructIntMapInt) Delete(toDelete []int) *testModelOperationStruct {
+func (op *testModelOperationStructIntMapInt) Delete(toDelete ...int) *testModelOperationStruct {
 	op.intMapIntDelete = toDelete
 	return (*testModelOperationStruct)(op)
 }
@@ -633,7 +633,7 @@ type testModelOperationStructIntPointerMap testModelOperationStruct
 func (op *testModelOperationStruct) IntPointerMap() *testModelOperationStructIntPointerMap {
 	return (*testModelOperationStructIntPointerMap)(op)
 }
-func (op *testModelOperationStructIntPointerMap) Delete(toDelete []*int) *testModelOperationStruct {
+func (op *testModelOperationStructIntPointerMap) Delete(toDelete ...*int) *testModelOperationStruct {
 	op.intPointerMapDelete = toDelete
 	return (*testModelOperationStruct)(op)
 }

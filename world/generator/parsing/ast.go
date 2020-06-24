@@ -16,6 +16,7 @@ type GoType struct {
 	IsMap    bool
 	Nillable bool
 
+	ArrayType	 *GoType
 	MapKey   *GoType
 	MapValue *GoType
 }
@@ -51,19 +52,20 @@ func FindStructures(fileAST *ast.File) []*GoStruct {
 func GoTypeFromExpr(e ast.Expr) GoType {
 	switch v := e.(type) {
 	case *ast.Ident:
-		return GoType{v.Name, false, false, false, nil, nil}
+		return GoType{v.Name, false, false, false, nil, nil, nil}
 	case *ast.ArrayType:
-		return GoType{"[]" + GoTypeFromExpr(v.Elt).Value, true, false, true, nil, nil}
+		arrayType := GoTypeFromExpr(v.Elt)
+		return GoType{"[]" + arrayType.Value, true, false, true, &arrayType, nil, nil}
 	case *ast.StarExpr:
-		return GoType{"*" + GoTypeFromExpr(v.X).Value, false, false, true, nil, nil}
+		return GoType{"*" + GoTypeFromExpr(v.X).Value, false, false, true, nil, nil, nil}
 	case *ast.SelectorExpr:
-		return GoType{GoTypeFromExpr(v.X).Value + "." + v.Sel.Name, false, false, false, nil, nil}
+		return GoType{GoTypeFromExpr(v.X).Value + "." + v.Sel.Name, false, false, false, nil, nil, nil}
 	case *ast.MapType:
 		keyType := GoTypeFromExpr(v.Key)
 		valueType := GoTypeFromExpr(v.Value)
-		return GoType{"map[" + keyType.Value + "]" + valueType.Value, false, true, true, &keyType, &valueType}
+		return GoType{"map[" + keyType.Value + "]" + valueType.Value, false, true, true, nil, &keyType, &valueType}
 	case *ast.InterfaceType:
-		return GoType{"interface{}", false, false, true, nil, nil}
+		return GoType{"interface{}", false, false, true, nil, nil, nil}
 	default:
 		panic(errors.New("unknown type"))
 	}

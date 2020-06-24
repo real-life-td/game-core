@@ -92,11 +92,15 @@ func editorFieldMethodName(fieldName string) string {
 // Gets an array of Jennifer code representing parameters for a given operations editor method
 func editorParams(operation *operation) []Code {
 	switch operation.action {
+	case addAction:
+		fallthrough
+	case removeAction:
+		return []Code{Id(actionToEditorParamName[operation.action]).Op("...").Id(operation.fieldType.ArrayType.Value)}
 	case putAction:
 		keyType, valueType := mapTypes(operation.fieldType)
 		return []Code{Id("key").Id(keyType), Id("value").Id(valueType)}
 	case deleteAction:
-		return []Code{Id(actionToEditorParamName[operation.action]).Index().Id(operation.fieldType.MapKey.Value)}
+		return []Code{Id(actionToEditorParamName[operation.action]).Op("...").Id(operation.fieldType.MapKey.Value)}
 	default:
 		return []Code{Id(actionToEditorParamName[operation.action]).Id(operation.fieldType.Value)}
 	}
