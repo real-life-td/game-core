@@ -13,7 +13,7 @@ type action int
 
 const (
 	initStage stage = iota // Keep at start
-	gameStage
+	deltaStage
 	numStages // Keep at end
 )
 
@@ -28,8 +28,8 @@ const (
 )
 
 var tokenToStage = map[string]stage{
-	"INIT_STAGE": initStage,
-	"GAME_STAGE": gameStage,
+	"init": initStage,
+	"delta": deltaStage,
 }
 
 var tokenToAction = map[string]action{

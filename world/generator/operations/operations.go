@@ -14,8 +14,8 @@ func GenerateOperations(file *jen.File, structs []*parsing.GoStruct) {
 
 			writeInitFunc(file, s.Name, sortByPrecedence(stageOperations.get(initStage)))
 			writeEditors(file, s.Name, initStage, stageOperations.get(initStage))
-			writeGameFunc(file, s.Name, sortByPrecedence(stageOperations.get(gameStage)))
-			writeEditors(file, s.Name, gameStage, stageOperations.get(gameStage))
+			writeDeltaFunc(file, s.Name, sortByPrecedence(stageOperations.get(deltaStage)))
+			writeEditors(file, s.Name, deltaStage, stageOperations.get(deltaStage))
 		}
 	}
 }

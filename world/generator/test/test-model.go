@@ -3,11 +3,11 @@
 package test
 
 type testModel struct {
-	int           int           // GEN: INIT_STAGE(SET);GAME_STAGE(SET)
-	intPointer    *int          // GEN: INIT_STAGE(SET);GAME_STAGE(SET)
-	intArray      []int         // GEN: INIT_STAGE(SET,ADD,REMOVE);GAME_STAGE(SET,ADD,REMOVE)
-	intMapInt     map[int]int   // GEN: INIT_STAGE(PUT,PUT_MULTIPLE,DELETE);GAME_STAGE(PUT,PUT_MULTIPLE,DELETE)
-	intPointerMap map[*int]*int // GEN: INIT_STAGE(PUT,PUT_MULTIPLE,DELETE);GAME_STAGE(PUT,PUT_MULTIPLE,DELETE)
+	int           int           // GEN: init(SET);delta(SET)
+	intPointer    *int          // GEN: init(SET);delta(SET)
+	intArray      []int         // GEN: init(SET,ADD,REMOVE);delta(SET,ADD,REMOVE)
+	intMapInt     map[int]int   // GEN: init(PUT,PUT_MULTIPLE,DELETE);delta(PUT,PUT_MULTIPLE,DELETE)
+	intPointerMap map[*int]*int // GEN: init(PUT,PUT_MULTIPLE,DELETE);delta(PUT,PUT_MULTIPLE,DELETE)
 }
 
 func intPointer(value int) *int {

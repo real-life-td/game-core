@@ -9,7 +9,7 @@ import (
 
 var stagePrefix = map[stage]string{
 	initStage: "Init",
-	gameStage: "",
+	deltaStage: "",
 }
 
 var actionFieldSuffix = map[action]string{
@@ -35,7 +35,7 @@ func writeOperationStructs(file *File, structName string, structOperations Stage
 		for _, operation := range operations {
 			fields = append(fields, operationFields(operation)...)
 
-			if operation.stage == gameStage {
+			if operation.stage == deltaStage {
 				typedDeltaField := typedDeltaField{
 					deltaField: deltaField{
 						deltaType: actionDeltaType[operation.action],

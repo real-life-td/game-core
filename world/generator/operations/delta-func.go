@@ -5,8 +5,8 @@ import (
 	. "github.com/dave/jennifer/jen"
 )
 
-func writeGameFunc(file *File, structName string, gameOperations []*operation) {
-	if len(gameOperations) == 0 {
+func writeDeltaFunc(file *File, structName string, deltaOperations []*operation) {
+	if len(deltaOperations) == 0 {
 		return
 	}
 
@@ -17,22 +17,22 @@ func writeGameFunc(file *File, structName string, gameOperations []*operation) {
 	deltaStructName := deltaStructName(structName)
 	operationCode = append(operationCode, Id("delta").Op(":=").New(Id(deltaStructName)))
 
-	for _, operation := range gameOperations {
+	for _, operation := range deltaOperations {
 		var actionCode []Code
 
 		switch operation.action {
 		case addAction:
-			actionCode = gameAddAction(operation, receiverId)
+			actionCode = deltaAddAction(operation, receiverId)
 		case removeAction:
-			actionCode = gameRemoveAction(operation, receiverId)
+			actionCode = deltaRemoveAction(operation, receiverId)
 		case setAction:
-			actionCode = gameSetAction(operation, receiverId)
+			actionCode = deltaSetAction(operation, receiverId)
 		case putAction:
-			actionCode = gamePutAction(operation, receiverId)
+			actionCode = deltaPutAction(operation, receiverId)
 		case putMultipleAction:
-			actionCode = gamePutMultipleAction(operation, receiverId)
+			actionCode = deltaPutMultipleAction(operation, receiverId)
 		case deleteAction:
-			actionCode = gameDeleteAction(operation, receiverId)
+			actionCode = deltaDeleteAction(operation, receiverId)
 		}
 
 		operationCode = append(operationCode, actionCode...)
@@ -40,13 +40,13 @@ func writeGameFunc(file *File, structName string, gameOperations []*operation) {
 
 	operationCode = append(operationCode, Return(Id("delta")))
 
-	operationStruct := Id("o").Op("*").Id(operationStructName(gameStage, structName))
+	operationStruct := Id("o").Op("*").Id(operationStructName(deltaStage, structName))
 	file.Func().Params(Id(receiverId).Op("*").Id(structName)).Id("Operation").Params(operationStruct).Op("*").Id(deltaStructName).Block(operationCode...)
 }
 
-func gameAddAction(operation *operation, receiverName string) []Code {
+func deltaAddAction(operation *operation, receiverName string) []Code {
 	if !operation.fieldType.IsArray {
-		panic(errors.New("game-func: Cannot create add function for non-array type"))
+		panic(errors.New("delta-func: Cannot create add function for non-array type"))
 	}
 
 	fieldName := operationFieldName(operation)
@@ -69,9 +69,9 @@ func gameAddAction(operation *operation, receiverName string) []Code {
 	return []Code{If(Id("o").Dot(fieldName).Op("!=").Nil()).Block(assignInitialArrayLength, ifNotNilOrEmpty)}
 }
 
-func gameRemoveAction(operation *operation, receiverName string) []Code {
+func deltaRemoveAction(operation *operation, receiverName string) []Code {
 	if !operation.fieldType.IsArray {
-		panic(errors.New("game-func: Cannot create remove function for non-array type"))
+		panic(errors.New("delta-func: Cannot create remove function for non-array type"))
 	}
 
 	fieldName := operationFieldName(operation)
@@ -99,7 +99,7 @@ func gameRemoveAction(operation *operation, receiverName string) []Code {
 	return []Code{If(Id("o").Dot(fieldName).Op("!=").Nil()).Block(ifNotNilOrEmpty, assignInitialArrayLength)}
 }
 
-func gameSetAction(operation *operation, receiverName string) []Code {
+func deltaSetAction(operation *operation, receiverName string) []Code {
 	fieldName := operationFieldName(operation)
 	structField := Id(receiverName).Dot(operation.field)
 	operationField := valueReference(fieldName, operation.fieldType)
@@ -119,9 +119,9 @@ func gameSetAction(operation *operation, receiverName string) []Code {
 	}
 
 }
-func gamePutAction(operation *operation, receiverName string) []Code {
+func deltaPutAction(operation *operation, receiverName string) []Code {
 	if !operation.fieldType.IsMap {
-		panic(errors.New("game-func: Cannot create put function for non-map type"))
+		panic(errors.New("delta-func: Cannot create put function for non-map type"))
 	}
 
 	keyFieldName, valueFieldName := operationMapFieldNames(operation)
@@ -137,9 +137,9 @@ func gamePutAction(operation *operation, receiverName string) []Code {
 		deltaField.Clone().Index(keyFieldValue.Clone()).Op("=").Add(valueFieldValue.Clone()))}
 }
 
-func gamePutMultipleAction(operation *operation, receiverName string) []Code {
+func deltaPutMultipleAction(operation *operation, receiverName string) []Code {
 	if !operation.fieldType.IsMap {
-		panic(errors.New("game-func: Cannot create put_multiple function for non-map type"))
+		panic(errors.New("delta-func: Cannot create put_multiple function for non-map type"))
 	}
 
 	fieldName := operationFieldName(operation)
@@ -154,9 +154,9 @@ func gamePutMultipleAction(operation *operation, receiverName string) []Code {
 			deltaField.Clone().Index(Id("key")).Op("=").Add(Id("value").Clone())))}
 }
 
-func gameDeleteAction(operation *operation, receiverName string) []Code {
+func deltaDeleteAction(operation *operation, receiverName string) []Code {
 	if !operation.fieldType.IsMap {
-		panic(errors.New("game-func: Cannot create put function for non-map type"))
+		panic(errors.New("delta-func: Cannot create put function for non-map type"))
 	}
 
 	fieldName := operationFieldName(operation)
