@@ -2,8 +2,14 @@ package operations
 
 import (
 	. "github.com/dave/jennifer/jen"
+	"sort"
 	"strings"
 )
+
+type fieldEditor struct {
+	fieldName string
+	operations []*operation
+}
 
 var actionToEditorName = map[action]string {
 	setAction: "Set",
@@ -28,8 +34,12 @@ func writeEditors(file *File, structName string, stage stage, operations []*oper
 	file.Func().Id(editorCreateName(structName, stage)).Params().Op("*").Id(operationStructName).Block(
 		Return().Op("&").Id(operationStructName).Block())
 
-	fields := groupByField(operations)
-	for fieldName, operations := range fields {
+	groups, fieldNames := groupByField(operations)
+	sort.Strings(fieldNames)
+
+	for _, fieldName := range fieldNames {
+		fieldOperations := groups[fieldName]
+
 		editorName := editorTypeName(operationStructName, fieldName)
 		editorMethodName := editorFieldMethodName(fieldName)
 
@@ -45,7 +55,7 @@ func writeEditors(file *File, structName string, stage stage, operations []*oper
 			}
 		}
 
-		for _, operation := range operations {
+		for _, operation := range fieldOperations {
 			var assignmentCode []*Statement
 			switch operation.action {
 			case putAction:
@@ -92,16 +102,19 @@ func editorParams(operation *operation) []Code {
 	}
 }
 
-func groupByField(operations []*operation) map[string][]*operation {
-	groups := make(map[string][]*operation)
+func groupByField(operations []*operation) (groups map[string][]*operation, fieldNames []string) {
+	groups = make(map[string][]*operation)
+	fieldNames = make([]string, 0)
+
 	for _, op := range operations {
 		group, ok := groups[op.field]
 		if !ok {
 			group = make([]*operation, 0)
+			fieldNames = append(fieldNames, op.field)
 		}
 
 		groups[op.field] = append(group, op)
 	}
 
-	return groups
+	return
 }

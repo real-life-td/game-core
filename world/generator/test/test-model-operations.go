@@ -395,16 +395,6 @@ func (op *testModelInitOperationStructInt) Set(new int) *testModelInitOperationS
 	return (*testModelInitOperationStruct)(op)
 }
 
-type testModelInitOperationStructIntPointer testModelInitOperationStruct
-
-func (op *testModelInitOperationStruct) IntPointer() *testModelInitOperationStructIntPointer {
-	return (*testModelInitOperationStructIntPointer)(op)
-}
-func (op *testModelInitOperationStructIntPointer) Set(new *int) *testModelInitOperationStruct {
-	op.intPointerSet = new
-	return (*testModelInitOperationStruct)(op)
-}
-
 type testModelInitOperationStructIntArray testModelInitOperationStruct
 
 func (op *testModelInitOperationStruct) IntArray() *testModelInitOperationStructIntArray {
@@ -439,6 +429,16 @@ func (op *testModelInitOperationStructIntMapInt) Put(key int, value int) *testMo
 }
 func (op *testModelInitOperationStructIntMapInt) PutMultiple(toPut map[int]int) *testModelInitOperationStruct {
 	op.intMapIntPutMultiple = toPut
+	return (*testModelInitOperationStruct)(op)
+}
+
+type testModelInitOperationStructIntPointer testModelInitOperationStruct
+
+func (op *testModelInitOperationStruct) IntPointer() *testModelInitOperationStructIntPointer {
+	return (*testModelInitOperationStructIntPointer)(op)
+}
+func (op *testModelInitOperationStructIntPointer) Set(new *int) *testModelInitOperationStruct {
+	op.intPointerSet = new
 	return (*testModelInitOperationStruct)(op)
 }
 
@@ -581,16 +581,6 @@ func (op *testModelOperationStructInt) Set(new int) *testModelOperationStruct {
 	return (*testModelOperationStruct)(op)
 }
 
-type testModelOperationStructIntPointer testModelOperationStruct
-
-func (op *testModelOperationStruct) IntPointer() *testModelOperationStructIntPointer {
-	return (*testModelOperationStructIntPointer)(op)
-}
-func (op *testModelOperationStructIntPointer) Set(new *int) *testModelOperationStruct {
-	op.intPointerSet = new
-	return (*testModelOperationStruct)(op)
-}
-
 type testModelOperationStructIntArray testModelOperationStruct
 
 func (op *testModelOperationStruct) IntArray() *testModelOperationStructIntArray {
@@ -625,6 +615,16 @@ func (op *testModelOperationStructIntMapInt) Put(key int, value int) *testModelO
 }
 func (op *testModelOperationStructIntMapInt) PutMultiple(toPut map[int]int) *testModelOperationStruct {
 	op.intMapIntPutMultiple = toPut
+	return (*testModelOperationStruct)(op)
+}
+
+type testModelOperationStructIntPointer testModelOperationStruct
+
+func (op *testModelOperationStruct) IntPointer() *testModelOperationStructIntPointer {
+	return (*testModelOperationStructIntPointer)(op)
+}
+func (op *testModelOperationStructIntPointer) Set(new *int) *testModelOperationStruct {
+	op.intPointerSet = new
 	return (*testModelOperationStruct)(op)
 }
 
